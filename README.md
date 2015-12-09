@@ -34,8 +34,8 @@ cell stays alive.
 ## Procedure
 
   The main class, UnitGP performs the actual operation of the GPP.  It uses
-  a helper class, the <Simulation>, to actually perform a simulation of the
-  unit given an <Expression>.
+  a helper class, the Simulation, to actually perform a simulation of the
+  unit given an Expression.
 
 ## Encoding The S-Expressions
 
