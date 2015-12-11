@@ -1,5 +1,7 @@
 # UnitGP
 
+![alt text](http://imgur.com/vEVqXSd "Grid and Expressions")
+
 Evolve the behavior of a simulated unit on a grid.
 
 Educational implementation of the Genetic Programming Paradigm described
