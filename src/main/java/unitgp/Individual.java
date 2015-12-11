@@ -1,4 +1,5 @@
 package unitgp;
+import expression.*;
 
 public class Individual implements Comparable {
   Expression root;
@@ -6,13 +7,17 @@ public class Individual implements Comparable {
   public int standardizedFitness;
   public int weightedFitness;
 
-  public Individual(){
+  public Individual( Expression r ){
+    root = r;
+  }
 
+  public String print(){
+    return root.print();
   }
 
   public int evaluate( int[] state ){
     //Evaluates the given expression using the state provided.
-    return 1;
+    return root.eval(state);
   }
 
   @Override

@@ -1,6 +1,7 @@
 package unitgp;
 import java.util.*;
 import simulation.*;
+import expression.*;
 
 public class UnitGP {
   //There are roughly 19 basic parameters of a GP run, according to Koza
@@ -15,17 +16,17 @@ public class UnitGP {
   private int maxInitialDepth   = 6;
 
   private List<Individual> population;
-  private List<Expression> functions;
-  private List<Terminal>  terminals;
+
+  private ExpressionBuilder eb;
 
   private Random rand;
   private GridSimulation sim;
 
   public UnitGP(){
     rand = new Random();
+    eb   = new ExpressionBuilder( );
+    sim  = new GridSimulation();
     initialize();
-    //Set up the simulation.
-    sim = new GridSimulation();
   }
 
   public void run( int generations ){
@@ -59,6 +60,9 @@ public class UnitGP {
     //  1/2 make with full Method
     //  1/2 make with grow method.
 
+    for( int i = 0; i < populationSize; i++ ){
+      population.add( new Individual( eb.getFullExpression( 4 ) ) );
+    }
   }
 
   private void evaluate(){
