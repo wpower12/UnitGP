@@ -1,6 +1,6 @@
 # UnitGP
 
-![alt text](http://imgur.com/vEVqXSd "Grid and Expressions")
+![alt text](http://imgur.com/vEVqXSd.png "Grid and Expressions")
 
 Evolve the behavior of a simulated unit on a grid.
 
