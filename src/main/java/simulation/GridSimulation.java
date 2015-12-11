@@ -1,6 +1,12 @@
 package simulation;
 import unitgp.Individual;
 import java.util.Random;
+import javax.swing.SwingUtilities;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+//For testing
+import unitgp.ExpressionBuilder;
 
 public class GridSimulation {
   private int MAXGENERATIONS;
@@ -13,6 +19,8 @@ public class GridSimulation {
   private int x, y; //Unit Location
   private int health;
   private boolean alive;
+
+  //Graphics!
 
   public GridSimulation(){
     SIZE = 20;
@@ -37,6 +45,31 @@ public class GridSimulation {
     ind.standardizedFitness = g;  //For now.
   }
 
+  public void graphicEvaluate( Individual ind ){
+    placeFood();
+    placeUnit();
+
+    //Creates the context.
+    int SCALE = 20;
+    JFrame f = new JFrame("Simulating Individual");
+    f.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+    f.setSize(SIZE*(SCALE+1)+1, SIZE*(SCALE+1)+1);
+
+    JPanel p = new GridPanel( grid, SIZE, SCALE );
+    f.add(p);
+    f.pack();
+    f.setVisible(true);
+
+
+  }
+
+  public static void main( String args[]){
+    ExpressionBuilder eb = new ExpressionBuilder();
+    GridSimulation sim = new GridSimulation();
+    sim.graphicEvaluate( new Individual( eb.getFullExpression(2) ) );
+  }
+
+
   private void placeFood(){
     //Randomly places food (sets a 1) in the grid
     for( int i = 0; i < SIZE; i++ ){
@@ -54,6 +87,7 @@ public class GridSimulation {
     //picks a new x/y location for the unit
     x = (int)(rand.nextFloat() * (float)SIZE);
     y = (int)(rand.nextFloat() * (float)SIZE);
+    grid[x][y] = 2;
     //Also we reset the starting health
     health = STARTINGHEALTH;
   }
@@ -63,6 +97,7 @@ public class GridSimulation {
   }
 
   private void moveUnit(Individual i){
+    //grid[x][y] = 0;
     health--;
     int[] state;
     state = getState();
@@ -89,8 +124,8 @@ public class GridSimulation {
     //Did you find food?
     if( grid[x][y] == 1 ){
       health += FOODVALUE;
-      grid[x][y] = 0;
     }
+    grid[x][y] = 2;
   }
 
   private int[] getState(){

@@ -10,7 +10,7 @@ public class ExpressionBuilder {
 
   }
 
-  Expression getFullExpression( int depth ){
+  public Expression getFullExpression( int depth ){
     return full_re(depth);
   }
 
