@@ -36,56 +36,72 @@ cell stays alive.
   I'm not totally sure that this is the strictest way to do this, but my
   s-expressions are encoded in the following way.
 
-  <pre>Example (Randomly Generated Full Tree of Maxdepth 4):
-  (IFUP (IFUP (IFUP (IFDOWN (MOVE 2) (MOVE 2)) (IFUP (MOVE 1) (MOVE 2))) (IFLEFT (IFDOWN (MOVE 1) (MOVE 1)) (IFUP (MOVE 1) (MOVE 2)))) (IFDOWN (IFLEFT (IFRIGHT (MOVE 1) (MOVE 2)) (IFLEFT (MOVE 3) (MOVE 3))) (IFDOWN (IFLEFT (MOVE 3) (MOVE 0)) (IFDOWN (MOVE 2) (MOVE 2)))))</pre>
-
+  ```
+  Example (Randomly Generated Full Tree of Maxdepth 4):
+  (IFUP (IFUP (IFUP (IFDOWN (MOVE 2) (MOVE 2)) (IFUP (MOVE 1) (MOVE 2))) (IFLEFT
+  (IFDOWN (MOVE 1) (MOVE 1)) (IFUP (MOVE 1) (MOVE 2)))) (IFDOWN (IFLEFT (IFRIGHT
+  (MOVE 1) (MOVE 2)) (IFLEFT (MOVE 3) (MOVE 3))) (IFDOWN (IFLEFT (MOVE 3) (MOVE 0))
+  (IFDOWN (MOVE 2) (MOVE 2)))))
+  ```
 
 ### Functions
 
   Four IF functions are used to look at the 4 neighbors of the unit.
 
-  <pre>IFDOWN, IFUP, IFRIGHT, IFLEFT
+  ```
+  IFDOWN, IFUP, IFRIGHT, IFLEFT
   ex:
   (IFDOWN a b)
-  // a and b are either Terminals or Functions</pre>
-
+  // a and b are either Terminals or Functions
+  ```
 
 ### Terminals
 
   The program uses a single terminal, with one varying parameter:
 
-  <pre>(MOVE a)  //a is in {0,1,2,3} an enum for the 4 directions {u, r, d, l}
-  (IFUP (MOVE 2) (MOVE 1))</pre>
+  ```lisp
+  (MOVE a)  //a is in {0,1,2,3} an enum for the 4 directions {u, r, d, l}
+  (IFUP (MOVE 2) (MOVE 1))
+  ```
 
 ### Implementation
 
-  To implement the above, an interface Expression is created that defines
+  To implement the above, an interface `Expression` is created that defines
   a eval method.
 
-  <pre>int eval( int[] state );</pre>
+  ```java
+  int eval( int[] state ){ ... }
+  ```
 
   The state represents the current values in the neighbor cells.
 
-  <pre>[u, r, d, l]</pre>
+  ```
+  [u, r, d, l]
+  ```
 
   The four s-expression functions implement this method.  The state variable
   is assumed to represent the current neighbors of a cell.  Given this state,
   the expression evaluates if there is food, and chooses a conditional branch
-  to then call <pre>eval()</pre> on.  
+  to then call `eval()` on.  
 
-  Method execution terminates when the chain of calls reaches a Terminal expression.
+  Method execution terminates when the chain of calls reaches a terminal expression.
   The terminal expression also implements the eval method, but instead of choosing
   a conditional branch, returns a single value.  We interpret this later as a
   movement to one of the four neighbor cells.
 
-  A rooted s-expression can be built using the ExpressionBuilder class.  This
+  A rooted s-expression can be built using the `ExpressionBuilder` class.  This
   can return the root of an s-expression, generated using the 'Full' or
   'Grow' methods of tree generation as defined in Koza Chp-6.
 
 ### Printing
 
-  In addition to eval, the Expression interface defines a <pre>print()</pre> method.  This is
+  In addition to eval, the `Expression` interface defines a <pre>print()</pre> method.  This is
   basically the same in all function classes, recursivly printing the expression
   and its parameters.  For the terminal function, just a string representing the
   move is returned.
+
+## Drawing the sim
+
+  The simulation is represented graphically with `java.awt` and `javax.swing`
+  frames, panels, and graphics.  
 
