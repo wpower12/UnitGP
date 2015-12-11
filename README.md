@@ -40,54 +40,47 @@ cell stays alive.
 
   Four IF functions are used to look at the 4 neighbors of the unit.
 
-  <pre>
-  IFDOWN, IFUP, IFRIGHT, IFLEFT
-
+  <pre>IFDOWN, IFUP, IFRIGHT, IFLEFT
   ex:
-
   (IFDOWN a b)
-  // a and b are either Terminals or Functions
-  </pre>
+  // a and b are either Terminals or Functions</pre>
 
 
 ### Terminals
 
   The program uses a single terminal, with one varying parameter:
 
-  <pre>
-  (MOVE a)  //a is in {0,1,2,3} an enum for the 4 directions {u, r, d, l}
-  (IFUP (MOVE 2) (MOVE 1))
-  </pre>
+  <pre>(MOVE a)  //a is in {0,1,2,3} an enum for the 4 directions {u, r, d, l}
+  (IFUP (MOVE 2) (MOVE 1))</pre>
 
 ### Implementation
 
   To implement the above, an interface Expression is created that defines
   a eval method.
 
-  int eval( int[] state );
+  <pre>int eval( int[] state );</pre>
 
-  The state represents the current values in the neighbor cells. , [u, r, d, l]
+  The state represents the current values in the neighbor cells.
 
-  Then, the 4 function expressions are created, implementing this eval method.
-  Each of the four function expressions contains references to its two branch
-  expressions.  Upon calling eval, they check the state, and call the appropriate
-  branch Expression's eval method.  
+  <pre>[u, r, d, l]</pre>
+
+  The four s-expression functions implement this method.  The state variable
+  is assumed to represent the current neighbors of a cell.  Given this state,
+  the expression evaluates if there is food, and chooses a conditional branch
+  to then call <pre>eval()</pre> on.  
 
   Method execution terminates when the chain of calls reaches a Terminal expression.
-  The terminal expression also implements the eval method.  
+  The terminal expression also implements the eval method, but instead of choosing
+  a conditional branch, returns a single value.  We interpret this later as a
+  movement to one of the four neighbor cells.
 
-  The implementation of the MOVE command returns a value equal to its
-  parameter.  We interpret this later as a movement to one of the 4 neighbor cells.
-
-  With these classes in place, a rooted s-expression can be built by using the
-  ExpressionBuilder.  This returns the root of an s-expression.
-
-  Calling eval( state ) on the root will begin the traversal of the tree, carrying
-  the state along with it so conditionals can be evaluated.
+  A rooted s-expression can be built using the ExpressionBuilder class.  This
+  can return the root of an s-expression, generated using the 'Full' or
+  'Grow' methods of tree generation as defined in Koza Chp-6.
 
 ### Printing
 
-  In addition to eval, the Expression interface defines a print method.  This is
+  In addition to eval, the Expression interface defines a <pre>print()</pre> method.  This is
   basically the same in all function classes, recursivly printing the expression
   and its parameters.  For the terminal function, just a string representing the
   move is returned.
