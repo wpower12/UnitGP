@@ -89,7 +89,7 @@ public class GridSimulation {
     //Did you find food?
     if( grid[x][y] == 1 ){
       health += FOODVALUE;
-      grid[x][y] == 0;
+      grid[x][y] = 0;
     }
   }
 
