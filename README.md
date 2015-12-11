@@ -36,6 +36,10 @@ cell stays alive.
   I'm not totally sure that this is the strictest way to do this, but my
   s-expressions are encoded in the following way.
 
+  <pre>Example (Randomly Generated Full Tree of Maxdepth 4):
+  (IFUP (IFUP (IFUP (IFDOWN (MOVE 2) (MOVE 2)) (IFUP (MOVE 1) (MOVE 2))) (IFLEFT (IFDOWN (MOVE 1) (MOVE 1)) (IFUP (MOVE 1) (MOVE 2)))) (IFDOWN (IFLEFT (IFRIGHT (MOVE 1) (MOVE 2)) (IFLEFT (MOVE 3) (MOVE 3))) (IFDOWN (IFLEFT (MOVE 3) (MOVE 0)) (IFDOWN (MOVE 2) (MOVE 2)))))</pre>
+
+
 ### Functions
 
   Four IF functions are used to look at the 4 neighbors of the unit.
