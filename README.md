@@ -26,72 +26,64 @@ unit as its fitness.  Then longer an individual stays alive, the more its
 
 Hopefully, an optimal strategy for gathering food is found.
 
-## Procedure
-
-  The main class, UnitGP performs the actual operation of the GPP.  It uses
-  a helper class, the Simulation, to actually perform a simulation of an
-  Individual, containing its rooted tree of Expressions.
-
-  The s-expressions are rooted trees where the parameters to any functions
-  are either Functions or Terminals.  
-
 ## Encoding The S-Expressions
 
-  I'm not totally sure that this is the strictest way to do this, but my
-  s-expressions are encoded in the following way.
+  For us to grow the behavior of the unit, we need to be able to express its
+  possible actions and the state it can view as a structure that can be
+  manipulated by the genetic programming operations.
 
+  If all the unit can do is move in the four cardinal directions, and all it
+  can see is the value of the cells next to it, then we could decide on
+  a set of methods like the following to encode the behavior.
+
+  ```lisp
+    (IFUP    TEXP FEXP)
+    (IFDOWN  TEXP FEXP)
+    (IFLEFT  TEXP FEXP)
+    (IFRIGHT TEXP FEXP)
+    //TEXP and FEXP are other expressions
+
+    (MOVE DIR)
+    //Dir is the dir [0,1,2,3] = [u, r, d, l] to move
   ```
-  Example (Randomly Generated Full Tree of Maxdepth 4):
+
+  Every iteration of the simulation, an expression composed of these
+  atomic operations will run.  Eventually, a `MOVE` command will be
+  executed, and the unit will update.
+
+  I'm not totally sure that this is the strictest way to do this, but its
+  working for now.
+
+  ```lisp
+  Example Expression (Randomly Generated Full Tree of Maxdepth 4):
+
   (IFUP (IFUP (IFUP (IFDOWN (MOVE 2) (MOVE 2)) (IFUP (MOVE 1) (MOVE 2))) (IFLEFT
   (IFDOWN (MOVE 1) (MOVE 1)) (IFUP (MOVE 1) (MOVE 2)))) (IFDOWN (IFLEFT (IFRIGHT
   (MOVE 1) (MOVE 2)) (IFLEFT (MOVE 3) (MOVE 3))) (IFDOWN (IFLEFT (MOVE 3) (MOVE 0))
   (IFDOWN (MOVE 2) (MOVE 2)))))
   ```
 
-### Functions
-
-  Four IF functions are used to look at the 4 neighbors of the unit.
-
-  ```
-  IFDOWN, IFUP, IFRIGHT, IFLEFT
-  ex:
-  (IFDOWN a b)
-  // a and b are either Terminals or Functions
-  ```
-
-### Terminals
-
-  The program uses a single terminal, with one varying parameter:
-
-  ```lisp
-  (MOVE a)  //a is in {0,1,2,3} an enum for the 4 directions {u, r, d, l}
-  (IFUP (MOVE 2) (MOVE 1))
-  ```
-
 ### Implementation
 
-  To implement the above, an interface `Expression` is created that defines
-  a eval method.
+  Now we need a way to store the trees of expressions in java, so they
+  can be manipulated by the GP operations.  An interface `Expression` is created that defines an `eval` method.
 
   ```java
   int eval( int[] state ){ ... }
   ```
+  As mentioned before, the unit can see the four adjacent cells.  An
+  array representing these cell's values are passed to the expression
+  on each update.
 
-  The state represents the current values in the neighbor cells.
+  Five java classes implement the `Expression` interface. Four for the conditionals, and one for the move expression.  
 
-  ```
-  [u, r, d, l]
-  ```
+  The four conditional `Expressions` store references to their `true` and
+  `false` branch expressions.  When we evaluate an Individuals expression,
+  we simply call evaluate on the root 'node', which then calls the eval method of the correct branch expression.  This ultimately finishes executing when a branch ends with a `MOVE` expression.
 
-  The four s-expression functions implement this method.  The state variable
-  is assumed to represent the current neighbors of a cell.  Given this state,
-  the expression evaluates if there is food, and chooses a conditional branch
-  to then call `eval()` on.  
-
-  Method execution terminates when the chain of calls reaches a terminal expression.
-  The terminal expression also implements the eval method, but instead of choosing
-  a conditional branch, returns a single value.  We interpret this later as a
-  movement to one of the four neighbor cells.
+  The `MOVE` expression class implements the `Expression` interface, but
+  does not track a reference to any other expressions.  When it is
+  evaluated, all it does is return its direction.
 
   A rooted s-expression can be built using the `ExpressionBuilder` class.  This
   can return the root of an s-expression, generated using the 'Full' or
