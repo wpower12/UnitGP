@@ -24,10 +24,10 @@ public class GridSimulation {
 
   public GridSimulation(){
     SIZE = 20;
-    STARTINGHEALTH = 15;
+    STARTINGHEALTH = 20;
     FOODVALUE = 5;
     MAXGENERATIONS = 200; //Should be less than 20*20
-    FOODDENSITY = 0.1f;   //How much food to place.
+    FOODDENSITY = 0.2f;   //How much food to place.
     rand = new Random();
     grid = new int[SIZE][SIZE];
   }
@@ -46,6 +46,7 @@ public class GridSimulation {
   }
 
   public void graphicEvaluate( Individual ind ){
+
     placeFood();
     placeUnit();
 
@@ -60,7 +61,17 @@ public class GridSimulation {
     f.pack();
     f.setVisible(true);
 
-
+    int g = 0;
+    while( ( g++ < MAXGENERATIONS) && alive() ){
+      moveUnit( ind );  //Uses the s-expression stored in ind to pick a move
+      try {
+        Thread.sleep(250);
+        p.removeAll();
+        p.validate();
+        p.repaint();
+      } catch(InterruptedException e) { Thread.currentThread().interrupt(); }
+    }
+    System.out.println("Finished "+g);
   }
 
   public static void main( String args[]){
@@ -97,7 +108,7 @@ public class GridSimulation {
   }
 
   private void moveUnit(Individual i){
-    //grid[x][y] = 0;
+    grid[x][y] = 0;
     health--;
     int[] state;
     state = getState();
@@ -105,20 +116,24 @@ public class GridSimulation {
     //we interpret the result of the expression as a move:
     switch( i.evaluate(state) ){
       case 0:
-        //Up
-        break;
+      //Up
+      y = (y == 0) ? SIZE-1 : y-1;
+      break;
       case 1:
-        //Right
-        break;
+      //Right
+      x = (x == SIZE-1) ? 0 : x+1;
+      break;
       case 2:
-        //Down
-        break;
+      //Down
+      y = (y == SIZE-1) ? 0 : y+1;
+      break;
       case 3:
-        //Left
-        break;
+      //Left
+      x = (x == 0) ? SIZE-1 : x-1;
+      break;
       default:
-        //Do nothing
-        break;
+      //Do nothing
+      break;
     }
 
     //Did you find food?
@@ -131,6 +146,11 @@ public class GridSimulation {
   private int[] getState(){
     //return 0/1 values for the up,right,down,left cells
     int[] ret = new int[4];
+    ret[0] = grid[x][ (y == 0) ? SIZE-1 : y-1];
+    ret[1] = grid[(x == SIZE-1) ? 0 : x+1][y];
+    ret[2] = grid[x][(y == SIZE-1) ? 0 : y+1];
+    ret[3] = grid[(x == 0) ? SIZE-1 : x-1][y];
+
     return ret;
   }
 }

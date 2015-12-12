@@ -24,6 +24,8 @@ public class GridPanel extends JPanel {
           g.drawLine( i*(SCALE+1), 0, i*(SCALE+1), SIZE*(SCALE+1)+1 );
           g.drawLine( 0, i*(SCALE+1), SIZE*(SCALE+1)+1, i*(SCALE+1) );
         }
+        g.drawLine( SIZE*(SCALE+1), 0, SIZE*(SCALE+1), SIZE*(SCALE+1)+1 );
+        g.drawLine( 0, SIZE*(SCALE+1), SIZE*(SCALE+1)+1, SIZE*(SCALE+1) );
 
         //Draw units
         for( int i = 0; i < SIZE; i++ ){

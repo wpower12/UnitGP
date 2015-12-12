@@ -14,27 +14,61 @@ public class ExpressionBuilder {
     return full_re(depth);
   }
 
-  Expression full_re( int d ){
+  private Expression full_re( int d ){
     Expression ret;
     if( d > 0 ){
       Expression t = full_re(d-1);
       Expression f = full_re(d-1);
       switch( rand.nextInt(4) ){
         case 0:
-          ret = new IFUP( t, f );
-          break;
+        ret = new IFUP( t, f );
+        break;
         case 1:
-          ret = new IFRIGHT(t, f);
-          break;
+        ret = new IFRIGHT(t, f);
+        break;
         case 2:
-          ret = new IFDOWN(t, f);
-          break;
+        ret = new IFDOWN(t, f);
+        break;
         case 3:
         default:
-          ret = new IFLEFT(t, f);
-          break;
+        ret = new IFLEFT(t, f);
+        break;
       }
       return ret;
+    } else {
+      return new MOVE( rand.nextInt(4) );
+    }
+  }
+
+  public Expression getGrowExpression( int depth ){
+    return grow_re(depth);
+  }
+
+  private Expression grow_re( int d ){
+    Expression ret;
+    if( d > 0 ){
+      if( rand.nextFloat() > 0.1f ){
+        Expression t = full_re(d-1);
+        Expression f = full_re(d-1);
+        switch( rand.nextInt(4) ){
+          case 0:
+            ret = new IFUP( t, f );
+            break;
+          case 1:
+            ret = new IFRIGHT(t, f);
+            break;
+          case 2:
+            ret = new IFDOWN(t, f);
+            break;
+          case 3:
+            default:
+            ret = new IFLEFT(t, f);
+            break;
+        }
+        return ret;
+      } else {
+        return new MOVE( rand.nextInt(4) );
+      }
     } else {
       return new MOVE( rand.nextInt(4) );
     }

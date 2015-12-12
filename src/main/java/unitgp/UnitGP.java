@@ -12,8 +12,8 @@ public class UnitGP {
   private float probCrossover   = 0.9f;
   private float probCOFunction  = 0.9f;
   private float probCOTerminal  = 0.1f;
-  private int maxCrossoverDepth = 17;
-  private int maxInitialDepth   = 6;
+  private int maxCrossoverDepth = 5;
+  private int maxInitialDepth   = 4;
 
   private List<Individual> population;
 
@@ -40,6 +40,10 @@ public class UnitGP {
     //TODO - Use some graphics API to show a graphic representation of
     //       an individual unit moving about the grid for a set number of
     //       generations.
+    Collections.sort( population );
+    System.out.println(population.get(0).print());
+    sim.graphicEvaluate(population.get(0));
+
   }
 
   public static void main( String args[] ){
@@ -53,16 +57,14 @@ public class UnitGP {
   */
   private void initialize(){
     population = new ArrayList<>();
-
-    //TODO - Implement the ramped 1/2 and 1/2
-    //For s = 2 to MaxStartDepth
-    //  (s/MaxStartDepth)*populationSize many new individuals
-    //  1/2 make with full Method
-    //  1/2 make with grow method.
-
-    for( int i = 0; i < populationSize; i++ ){
-      population.add( new Individual( eb.getFullExpression( 4 ) ) );
+    int step = (int)(populationSize/(float)(2*(maxInitialDepth-2)));
+    for( int s = 2; s <= maxInitialDepth; s++  ){
+      for( int i = 0; i < step; i++ ){
+        population.add(new Individual( eb.getFullExpression( s ) ));
+        population.add(new Individual( eb.getGrowExpression( s ) ));
+      }
     }
+
   }
 
   private void evaluate(){
