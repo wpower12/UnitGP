@@ -97,13 +97,51 @@ Hopefully, an optimal strategy for gathering food is found.
 
   Five java classes implement the `Expression` interface. Four for the conditionals, and one for the move expression.  
 
-  The four conditional `Expressions` store references to their `true` and
-  `false` branch expressions.  When we evaluate an Individuals expression,
-  we simply call evaluate on the root 'node', which then calls the eval method of the correct branch expression.  This ultimately finishes executing when a branch ends with a `MOVE` expression.
+  The four conditional `Expressions` store references to their true and
+  false branch `Expressions`.  These are then followed based on the logic
+  of the expression.  In general, they look like:
 
-  The `MOVE` expression class implements the `Expression` interface, but
+  ```java
+  public class IFDOWN implements Expression {
+    Expression truebranch;
+    Expression falsebranch;
+
+    //...
+
+    //state convention [UP, RIGHT, DOWN, LEFT]
+    public int eval( int[] state ){
+      if( state[ 2 ] == 1 ){
+        return truebranch.eval( state );
+      } else {
+        return falsebranch.eval( state );
+      }
+    }
+
+    //...
+  }  
+  ```
+
+  The `MOVE` class also implements the `Expression` interface, but
   does not track a reference to any other expressions.  When it is
-  evaluated, all it does is return its direction.
+  evaluated, all it does is return its direction.  This shows how the move
+  function behaves as a terminal.  It returns a value up the stack of
+  calls instead of evaluating a new expression.
+
+  ```java
+  public class MOVE implements Expression {
+    int dir;
+    //...
+    public int eval( int[] state ){
+      return dir;
+    }
+    //...
+  }
+  ```
+
+  To evaluate an Individuals expression, we simply call eval() on its root, passing
+  along the state.  This occurs in the `GridSimulation` class, which contains
+  the logic specific to the simulation of the unit.  Below we see an overview
+  of the state being passed to the unit during evaluation.
 
   ```java
   //from the Individual class
@@ -193,5 +231,8 @@ Hopefully, an optimal strategy for gathering food is found.
 
 ### Evaluating <a id="gp_eval"></a>
 
+  The simulation itself.  Choosing parameters.  Grid behavior on outofbounds.
 
 ### Selecting <a id="gp_select"></a>
+
+  Meat of GP.  Fitness proportional selection.  Reproduction, crossover, mutation.
