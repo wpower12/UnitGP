@@ -24,9 +24,9 @@ public class GridSimulation {
 
   public GridSimulation(){
     SIZE = 20;
-    STARTINGHEALTH = 20;
-    FOODVALUE = 5;
-    MAXGENERATIONS = 200; //Should be less than 20*20
+    STARTINGHEALTH = 10;
+    FOODVALUE = 3;
+    MAXGENERATIONS = 400; //Should be around the SIZE*SIZE*FOODDENSITY*FOODVALUE
     FOODDENSITY = 0.2f;   //How much food to place.
     rand = new Random();
     grid = new int[SIZE][SIZE];

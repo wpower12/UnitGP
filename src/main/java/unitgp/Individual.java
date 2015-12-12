@@ -23,6 +23,15 @@ public class Individual implements Comparable {
   @Override
   public int compareTo(Object o) {
     Individual p = (Individual) o;
-    return (new Integer(weightedFitness)).compareTo(p.weightedFitness);
+    int res = (new Integer(weightedFitness)).compareTo(p.weightedFitness);
+    int ret;
+    if( res > 0 ){
+      ret = -1;
+    } else if ( res < 0 ){
+      ret = 1;
+    } else {
+      ret = 0;
+    }
+    return ret;
   }
 }

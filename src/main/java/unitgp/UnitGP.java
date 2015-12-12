@@ -7,9 +7,11 @@ public class UnitGP {
   //There are roughly 19 basic parameters of a GP run, according to Koza
   //We only use the ones for the operations we are actually implementing,
   //with another given by the client when calling run.
-  private int populationSize    = 200;
+  private int populationSize    = 8;  //must be power of 2 for now.
   private float probReproduce   = 0.1f;
   private float probCrossover   = 0.9f;
+  private int numCrossover;
+  private int numReproduce;
   private float probCOFunction  = 0.9f;
   private float probCOTerminal  = 0.1f;
   private int maxCrossoverDepth = 5;
@@ -48,7 +50,7 @@ public class UnitGP {
 
   public static void main( String args[] ){
     UnitGP exampleRun = new UnitGP();
-    exampleRun.run( 100 );
+    exampleRun.run( 10 );
     exampleRun.simulateBest();
   }
 
@@ -57,14 +59,22 @@ public class UnitGP {
   */
   private void initialize(){
     population = new ArrayList<>();
-    int step = (int)(populationSize/(float)(2*(maxInitialDepth-2)));
-    for( int s = 2; s <= maxInitialDepth; s++  ){
-      for( int i = 0; i < step; i++ ){
-        population.add(new Individual( eb.getFullExpression( s ) ));
-        population.add(new Individual( eb.getGrowExpression( s ) ));
-      }
+    System.out.print("init depths - ( ");
+    int depth;
+    for( int i = 0; i < populationSize/2; i++ ){
+      depth = (int)(2.0f*(float)i*(float)(maxInitialDepth)/(float)populationSize)+2;
+      System.out.print( depth+" " );
+      population.add( new Individual( eb.getFullExpression( depth) ) );
+      population.add( new Individual( eb.getGrowExpression( depth) ) );
     }
+    System.out.println(")");
 
+    numCrossover = (int)Math.floor(((float)populationSize*probCrossover));
+    if( numCrossover%2 != 0 ){
+      numCrossover--;
+    }
+    numReproduce = populationSize - numCrossover;
+    System.out.println("CO: "+numCrossover+" R: "+numReproduce);
   }
 
   private void evaluate(){
@@ -74,29 +84,20 @@ public class UnitGP {
   }
 
   private void select(){
-    //To implement fitness proportional selection, we the calculate the
-    //standardized fitness in such a way as to also randomly multiply
-    //each weight by a 0-1 float.  When we sort population by this
-    //value, we get an ordered list of candidates for reproduction and
-    //crossover
-
-    //To get pairs for crossover, we reapply the random weights and resort
-    //the first two individuals are the ones used
-
+    //Fitness proportional selection with sorting and random weights!
     List<Individual> newPop = new ArrayList<>();
     rWeightPopulation();
     Collections.sort( population );
+    printPop();
 
     //Individuals that reproduce
-    int numSelected = (int)((float)populationSize*probReproduce);
-    for( int i = 0; i < numSelected; i++ ){
+    for( int i = 0; i < numReproduce; i++ ){
       newPop.add( population.get(i) );
     }
 
     //Pairs that crossover
     List<Individual> newPair = new ArrayList<>();
-    int numCrossOver = (int)((float)populationSize*probCrossover);
-    for( int c = 0; c < numCrossOver; c++ ){
+    for( int c = 0; c < numCrossover/2; c++ ){
       rWeightPopulation();
       Collections.sort(population);
       newPair = crossover( population.get(0), population.get(1) );
@@ -119,4 +120,12 @@ public class UnitGP {
     }
   }
 
+  private void printPop(){
+    //Print old pop
+    System.out.print("pop: ( ");
+    for( Individual i : population ){
+      System.out.print( i.fitness+" " );
+    }
+    System.out.println(")");
+  }
 }
