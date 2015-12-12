@@ -11,7 +11,8 @@ ___
 
 + [Overview](#overview)
 
-## Overview <a id="overview"></a>
+<a id="overview"></a>
+## Overview 
 
 Educational implementation of the Genetic Programming Paradigm described
 in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi).
