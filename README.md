@@ -6,7 +6,7 @@ Evolving the behavior of a simple food-seeking unit on a grid with
 [genetic programming](https://en.wikipedia.org/wiki/Genetic_programming).
 
 Educational implementation of the Genetic Programming Paradigm described
-in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi)".
+in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi).
 
 The structure undergoing adaptation will be simple s-expressions, stored
 as rooted trees.
