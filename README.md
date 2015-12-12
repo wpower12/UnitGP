@@ -10,9 +10,15 @@ ___
 ## ToC
 
 + [Overview](#overview)
++ [Encoding Behavior](#encode)
+  * [Choosing Expressions](#en_chose)
+  * [Expressions in Java](#en_java)
++ [Genetic Programming](#gp)
+  * [Initializing](#gp_init)
+  * [Evaluating](#gp_eval)
+  * [Selecting](#gp_select)
 
-<a id="overview"></a>
-## Overview 
+## Overview <a id="overview"></a>
 
 Educational implementation of the Genetic Programming Paradigm described
 in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi).
@@ -35,11 +41,16 @@ unit as its fitness.  Then longer an individual stays alive, the more its
 
 Hopefully, an optimal strategy for gathering food is found.
 
-## Encoding The S-Expressions
+## Encoding Behavior <a id="encode"></a>
 
   For us to grow the behavior of the unit, we need to be able to express its
   possible actions and the state it can view as a structure that can be
   manipulated by the genetic programming operations.
+
+  An s-expression is a TODO
+
+
+### Choosing Expressions <a id="en_choose"></a>
 
   If all the unit can do is move in the four cardinal directions, and all it
   can see is the value of the cells next to it, then we could decide on
@@ -72,7 +83,7 @@ Hopefully, an optimal strategy for gathering food is found.
   (IFDOWN (MOVE 2) (MOVE 2)))))
   ```
 
-### Implementing the S-Expressions in Java
+### S-Expressions in Java <a id="en_java"></a>
 
   Now we need a way to store the trees of expressions in java, so they
   can be manipulated by the GP operations.  An interface `Expression` is created that defines an `eval` method.
@@ -94,14 +105,29 @@ Hopefully, an optimal strategy for gathering food is found.
   does not track a reference to any other expressions.  When it is
   evaluated, all it does is return its direction.
 
-### Printing
+  ```java
+  //from the Individual class
+  public int evaluate( int[] state ){
+    //Evaluates the given expression using the state provided.
+    return root.eval(state);
+  }
+  ```
+
+  ```java
+  //from the GridSimulation class - while updating a unit within the simulation
+  int[] state;
+  state = getState();
+  switch( i.evaluate(state) ){
+    //Move the Unit
+  }
+  ```
 
   In addition to eval, the `Expression` interface defines a <pre>print()</pre> method.  This is
   basically the same in all function classes, recursivly printing the expression
   and its parameters.  For the terminal function, just a string representing the
   move is returned.
 
-## Genetic Programming!
+## Genetic Programming! <a id="gp"></a>
 
   Now that we have a structure, and a representation of it in code, we can begin to
   look at the actual operations performed by the Genetic Programming Paradigm.
@@ -111,7 +137,7 @@ Hopefully, an optimal strategy for gathering food is found.
     2) Evaluating the population  
     3) Selecting the population
 
-### Initializing
+### Initializing <a id="gp_init"></a>
 
   The population undergoing adaptation is just a list of objects, each one
   holding a reference to an `Expression` and some value representing the
@@ -165,4 +191,7 @@ Hopefully, an optimal strategy for gathering food is found.
   start of a GP run can hinder the search of solutions, as a poor local optimum
   will quickly over take the stagnating population.
 
-### Evaluating
+### Evaluating <a id="gp_eval"></a>
+
+
+### Selecting <a id="gp_select"></a>
