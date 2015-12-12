@@ -2,27 +2,29 @@
 
 ![alt text](http://imgur.com/vEVqXSd.png "Grid and Expressions")
 
-Evolve the behavior of a simulated unit on a grid.
+Evolving the behavior of a simple food-seeking unit on a grid with
+[genetic programming](https://en.wikipedia.org/wiki/Genetic_programming).
 
 Educational implementation of the Genetic Programming Paradigm described
-in "Koza 92' Genetic Programming".
+in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi)".
 
 The structure undergoing adaptation will be simple s-expressions, stored
 as rooted trees.
 
 The resulting s-expression tree will be used to decide the behavior of
-a <Unit> on a grid.  The grid will contain integer values, with a 0 being
-empty space, and a 1 being 'food'.  The commands listed in the terminal
-set will move the unit to the corresponding cell.
+a unit on a grid containing food. Eating food will keep the unit alive, while
+every turn the unit loses health.
 
-The unit will have a health value.  This is an integer value that starts
-at some positive value.  Each time step, it reduces by 1.  Eating food
-increases the health value by some set amount.
+By defining a set of s-expressions that interact with the unit and read
+state from the neighbors of the unit, we can then build nested s-expressions which
+will alter the state of the unit (move it) based on the state of the grid they
+are shown.  
 
-When a unit moves into a cell with a 1, it is replaced by 0, or eaten.
+By allowing food to replenish the health of the unit, we can use the age of the
+unit as its fitness.  Then longer an individual stays alive, the more its
+'genome' will contribute to the subsequent population of individuals.
 
-The fitness of a given s-expression tree is the number of generations the
-cell stays alive.
+Hopefully, an optimal strategy for gathering food is found.
 
 ## Procedure
 
