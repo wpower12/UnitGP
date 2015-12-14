@@ -10,6 +10,11 @@ ___
 ## ToC
 
 + [Overview](#overview)
+  * [What Is GP?](#o_gp)
+    - [S-Expressions](#o_gp_sexp)
+    - [Fitness](#o_gp_fit)
+    - [Genetic Operations](#o_gp_ops)
+  * [Simulation](#o_sim)
 + [Encoding Behavior](#encode)
   * [Choosing Expressions](#en_chose)
   * [Expressions in Java](#en_java)
@@ -17,38 +22,94 @@ ___
   * [Initializing](#gp_init)
   * [Evaluating](#gp_eval)
   * [Selecting](#gp_select)
++ [Conclusion](#con)
+  * [Expected Behavior](#con_expected)
+  * [Interesting Solutions](#con_solns)
+  * [Next Steps](#con_next)
++ [References](#ref)
 
 ## Overview <a id="overview"></a>
 
 Educational implementation of the Genetic Programming Paradigm described
 in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi).
 
-The structure undergoing adaptation will be simple s-expressions, stored
-as rooted trees.
+### What Is Genetic Programming? <a id="o_gp"></a>
 
-The resulting s-expression tree will be used to decide the behavior of
-a unit on a grid containing food. Eating food will keep the unit alive, while
-every turn the unit loses health.
+Genetic programming is a method of generating a procedure.  Normally, a procedure
+is created to solve a problem.  We write software to meet a requirement, we implement
+a specific algorithm to accomplish a set task.  Typically, these things are done in
+a direct manner.  The problem is reasoned about, and the procedure is crafted
+and tested until it does what it needs.
 
-By defining a set of s-expressions that interact with the unit and read
-state from the neighbors of the unit, we can then build nested s-expressions which
-will alter the state of the unit (move it) based on the state of the grid they
-are shown.  
+Genetic programming instead generates a procedure by imitating the process of
+natural selection.  A population of individuals is created, each one representing
+a random attempt at solving the problem.  Each individual would be some possible
+procedure.  
 
-By allowing food to replenish the health of the unit, we can use the age of the
-unit as its fitness.  Then longer an individual stays alive, the more its
-'genome' will contribute to the subsequent population of individuals.
+This population is then evaluated.  Each individual, in the context of the problem,
+is given some numerical evaluation.
 
-Hopefully, an optimal strategy for gathering food is found.
+If the procedure represents a possible mathematical function, the fitness might
+be the error when fed a test set.  Or if the procedure represents a path through
+a grid filled with coins, the fitness may be the number of coins collected.  
+
+Representing a problem or procedure in this way can be difficult, but there is a
+mathematical construct that helps us visualize the ways procedures can be connected,
+manipulated, and built.
+
+The S-Expression!  While this topic is very deep, for our purposes we can consider
+the s-expressions as representations of functions.  The main benefit of them is
+the ability to view functions and procedures as trees.
+
+#### S-Expressions <a id="o_gp_sexp"></a>
+
+  S-expressions are defined formally as...
+
+  As an example, consider the following s-expressions representing simple
+  arathmatic functions.
+
+  ```lisp
+  (ADD A B)
+  (SUB A B)
+  (MUL A B)
+  ```
+  Each expression can take as a parameter either an expression, or a terminal
+  value.  Suppose we want to only deal with integers. Then the following would
+  be well-defined s-expressions.
+
+  ```lisp
+  (ADD (ADD 2 3) 1)  //evaluates to 6
+  (ADD (MUL 2 (SUB 5 2)) 1) //evaluates to 7
+  ```
+
+  By selecting a set of functions that all return the same type, and a set of
+  terminals that are of that type, we create a set of expressions that are
+  closed.  This is a very important property.  This gives us the assurance that
+  no matter how we nest the expressions, if we eventually fill all possible
+  leafs with terminal nodes, the full expression will evaluate correctly.
+
+  When we are able to encode a problems possible solutions into a set of atomic
+  s-expressions, we open up the possibility of using genetic programming.  The
+  problem of evolving the new procedures now becomes a problem of building trees
+  of s-expressions, and clipping and recombining them into new possible solutions.
+
+#### Fitness <a id="o_gp_fit"></a>
+
+  Determining fitness...
+
+  Using the simulation...
+
+#### Genetic Operations <a id="o_gp_ops"></a>
+
+  Reproduction...
+
+  Crossover...
 
 ## Encoding Behavior <a id="encode"></a>
 
-  For us to grow the behavior of the unit, we need to be able to express its
-  possible actions and the state it can view as a structure that can be
-  manipulated by the genetic programming operations.
-
-  An s-expression is a TODO
-
+  Now it comes time to actually encode the context of the simulation into some
+  atomic expressions.  A best practice is to keep the number of atomic Operations
+  small and simple.  
 
 ### Choosing Expressions <a id="en_choose"></a>
 
