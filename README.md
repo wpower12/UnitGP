@@ -235,4 +235,4 @@ Hopefully, an optimal strategy for gathering food is found.
 
 ### Selecting <a id="gp_select"></a>
 
-  Meat of GP.  Fitness proportional selection.  Reproduction, crossover, mutation.
+  Meat of GP.  Fitness proportional selection.  Reproduction, crossover, mutation.-

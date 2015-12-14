@@ -96,22 +96,83 @@ public class UnitGP {
     }
 
     //Pairs that crossover
-    List<Individual> newPair = new ArrayList<>();
     for( int c = 0; c < numCrossover/2; c++ ){
       rWeightPopulation();
       Collections.sort(population);
-      newPair = crossover( population.get(0), population.get(1) );
-      newPop.add( newPair.get(0) );
-      newPop.add( newPair.get(1) );
+      crossover( population.get(0), population.get(1) );
+      newPop.add( population.get(0) );
+      newPop.add( population.get(1) );
     }
     population = newPop;  //Set new population
   }
 
-  private ArrayList<Individual> crossover( Individual p1, Individual p2 ){
-    ArrayList<Individual> ret = new ArrayList<>();
-    ret.add(p1);
-    ret.add(p2);
-    return ret;
+  private void crossover( Individual p1, Individual p2 ){
+    //TODO - Might need to make Expressions a class that I can extend/Override
+    //     - Need to be able to traverse the nodes, so they have to exist as
+    //       fields in both types of Expressions, terminal and non terminal.
+    
+    //Select node for cross over A and prev_A
+    // int maxdepth = p1.getDepth();
+    // boolean hit = false;
+    // Expression prev_a = p1.root;
+    // Expression a = p1.root;
+    // if( rand.nextFloat() > 0.5f ){
+    //   a = a.truebranch;
+    // } else {
+    //   a = a.falsebranch;
+    // }
+    // int depth = 2;
+    // while( !hit ){
+    //   //See if we get a hit
+    //   float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
+    //   if( chance > 0.5f || a.terminal() ){
+    //     //If we do, we use this as our node.
+    //     hit = true;
+    //   } else {
+    //     prev_a = a;
+    //     if( rand.nextFloat() > 0.5f ){
+    //       a = a.truebranch;
+    //     } else {
+    //       a = a.falsebranch;
+    //     }
+    //     depth++;
+    //   }
+    // }
+    // //Select node for cross over B and prev_B
+    // maxdepth = p2.getDepth();
+    // hit = false;
+    // Expression prev_b = p1.root;
+    // Expression b = p1.root;
+    // if( rand.nextFloat() > 0.5f ){
+    //   b = b.truebranch;
+    // } else {
+    //   b = b.falsebranch;
+    // }
+    // depth = 2;
+    // while( !hit ){
+    //   //See if we get a hit
+    //   float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
+    //   if( chance > 0.5f || b.terminal()){
+    //     //If we do, we use this as our node.
+    //     hit = true;
+    //   } else {
+    //       prev_b = b;
+    //       if( rand.nextFloat() > 0.5f ){
+    //         b = b.truebranch;
+    //       } else {
+    //         b = b.falsebranch;
+    //       }
+    //       depth++;
+    //   }
+    // }
+
+    //Swap the two nodes by reassinging the pointers in the expressions
+
+
+
+    //Check to randomly mirror elements.
+
+
   }
 
   private void rWeightPopulation(){
@@ -124,7 +185,7 @@ public class UnitGP {
     //Print old pop
     System.out.print("pop: ( ");
     for( Individual i : population ){
-      System.out.print( i.fitness+" " );
+      System.out.print( i.fitness+"/"+i.weightedFitness+" " );
     }
     System.out.println(")");
   }

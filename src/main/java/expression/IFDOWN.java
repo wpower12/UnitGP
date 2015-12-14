@@ -2,8 +2,8 @@ package expression;
 
 public class IFDOWN implements Expression {
 
-  Expression truebranch;
-  Expression falsebranch;
+  public Expression truebranch;
+  public Expression falsebranch;
 
   //state convention [UP, RIGHT, DOWN, LEFT]
   public int eval( int[] state ){
@@ -16,6 +16,10 @@ public class IFDOWN implements Expression {
 
   public String print(){
     return "(IFDOWN "+truebranch.print()+" "+falsebranch.print()+")";
+  }
+
+  public boolean terminal(){
+    return false;
   }
 
   public IFDOWN( Expression t, Expression f ){

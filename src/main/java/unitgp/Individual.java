@@ -7,6 +7,8 @@ public class Individual implements Comparable {
   public int standardizedFitness;
   public int weightedFitness;
 
+  public int depth;
+
   public Individual( Expression r ){
     root = r;
   }
@@ -18,6 +20,11 @@ public class Individual implements Comparable {
   public int evaluate( int[] state ){
     //Evaluates the given expression using the state provided.
     return root.eval(state);
+  }
+
+  //Return the depth of the root expression
+  public int getDepth(){
+    return 5;
   }
 
   @Override
