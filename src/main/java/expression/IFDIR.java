@@ -1,11 +1,23 @@
 package expression;
 
 public class IFDIR extends Expression {
-  private int dir;
+
   public IFDIR ( int d, Expression l, Expression r ){
     dir = d;
     truebranch = l;
     falsebranch = r;
+  }
+
+  @Override
+  public Expression copy(){
+    IFDIR ret = new IFDIR( dir, null, null );
+    if( truebranch != null ){
+      ret.truebranch = truebranch.copy();
+    }
+    if( falsebranch != null ){
+      ret.falsebranch = truebranch.copy();
+    }
+    return ret;
   }
 
   @Override

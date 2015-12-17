@@ -3,27 +3,47 @@ import java.util.*;
 import simulation.*;
 import expression.*;
 
+// import org.apache.logging.log4j.LogManager;
+// import org.apache.logging.log4j.Logger;
+
 public class UnitGP {
-  //There are roughly 19 basic parameters of a GP run, according to Koza
-  //We only use the ones for the operations we are actually implementing,
-  //with another given by the client when calling run.
-  private int populationSize    = 8;  //must be power of 2 for now.
-  private float probReproduce   = 0.1f;
-  private float probCrossover   = 0.9f;
-  private int numCrossover;
-  private int numReproduce;
+  /**
+  According to Koza there are roughly 19 basic parameters of a GP run. We only
+  use those required for the operations we are actually implementing.  For example,
+  no mutation is being applied during the selection phase, so we can omit the
+  parameters related to it.
+  */
+  private static int generations = 100;
+  private int populationSize    = 256;  //must be power of 2 for now.
+  private float perReproduce   = 0.1f;
+  private float perCrossover   = 0.9f;
   private float probCOFunction  = 0.9f;
   private float probCOTerminal  = 0.1f;
   private int maxCrossoverDepth = 5;
-  private int maxInitialDepth   = 4;
-
-  private List<Individual> population;
-
-  private ExpressionBuilder eb;
+  private int maxInitialDepth   = 6;
+  //Calculated later.
+  private int numCrossover;
+  private int numReproduce;
 
   private Random rand;
   private GridSimulation sim;
+  private ExpressionBuilder eb;
+  private List<Individual> population;
+  // private static Logger logger = LogManager.getLogger();
 
+  /**
+   * Represents a Genetic Programming procedure that evolves expressions
+   * representing the behavior of a unit in a simulation.
+   *
+   * The Function and Terminal set of expressions are currently tightly coupled
+   * between the expression package, the GridSimulation class, and the
+   * ExpressionBuilder class.  Abstracting the sets of functions and terminals
+   * is a big next step.  However, the current system is working and a decent
+   * starting point.
+   *
+   * @see GridSimulation
+   * @see ExpressionBuilder
+   */
   public UnitGP(){
     rand = new Random();
     eb   = new ExpressionBuilder( );
@@ -31,180 +51,157 @@ public class UnitGP {
     initialize();
   }
 
-  public void run( int generations ){
-    for( int i = 0; i < generations; i++ ){
-      System.out.println("Eval");
-      evaluate();   //Run the simulation on each individual and obtain fitness
-      System.out.println("Select");
-      select();     //Apply the reproduction and crossover operations
+  /**
+   * Runs the Genetic Programming process.
+   *
+   * @param generations number of generations to run
+   */
+  public void run( int g ){
+    // logger.info("Running for "+generations+" generations.");
+    for( int i = 0; i < g; i++ ){
+      evaluate();
+      // logger.info( "Pop: "+printPop() );
+      // logger.info( "Selecting...");
+      select();
     }
-  }
-
-  public void simulateBest(){
-    Collections.sort( population );
-    System.out.println(population.get(0).print());
-    sim.graphicEvaluate(population.get(0));
-
-  }
-
-  public static void main( String args[] ){
-    UnitGP exampleRun = new UnitGP();
-    exampleRun.run( 10 );
-    exampleRun.simulateBest();
   }
 
   /**
+   * Simulates the current best individual in the population.  Uses an instance
+   * of the GridSimulation class to display the behavior of an Individual.
+   *
+   * @see GridSimulation
+   * @see Individual
+   */
+  public void simulateBest(){
+    cWeightPopulation();
+    Collections.sort( population );
+    System.out.println(population.get(0).print());
+    sim.graphicEvaluate(population.get(0));
+  }
+
+  /**
+   * Main entry point of the app.  Runs a simulation for a set number of
+   * generations and then simulates the best resulting indvidual.
+   *
+   * @param args command line arguments.
+   */
+  public static void main( String args[] ){
+    // logger.info("Entered Main");
+    UnitGP exampleRun = new UnitGP();
+    exampleRun.run( generations );
+    exampleRun.simulateBest();
+  }
+
+  /***************************************************************************
   * Private Methods
   */
+
+  /**
+   * Creates the inital population of individuals.  Implements the 'Ramped Half and Half'
+   * method outlined in Koza-92.  The possible individuals are grouped into a
+   * (n-2) many equal groupings, each group representing a depth, from 2 to n.
+   * For each of these groups, half the individuals are grown with the 'Full'
+   * method of expression tree growth, and the other half with the 'Grow' method.
+   * These are outlined in the ExpressionBuilder class.
+   *
+   * @see ExpressionBuilder Details 'Full' and 'Grow' methods.
+   */
   private void initialize(){
     population = new ArrayList<>();
-    System.out.print("init depths - ( ");
     int depth;
     for( int i = 0; i < populationSize/2; i++ ){
       depth = (int)(2.0f*(float)i*(float)(maxInitialDepth)/(float)populationSize)+2;
-      System.out.print( depth+" " );
       population.add( new Individual( eb.getFullExpression( depth) ) );
       population.add( new Individual( eb.getGrowExpression( depth) ) );
     }
-    System.out.println(")");
 
-    numCrossover = (int)Math.floor(((float)populationSize*probCrossover));
+    numCrossover = (int)Math.floor(((float)populationSize*perCrossover));
     if( numCrossover%2 != 0 ){
       numCrossover--;
     }
     numReproduce = populationSize - numCrossover;
-    System.out.println("CO: "+numCrossover+" R: "+numReproduce);
   }
 
+  /**
+   * Each individual is passed to the simulation to be evaluated.  The simulation
+   * runs its procedures and updates the fitness field of the indvidual.
+   *
+   * @see GridSimulation.evaluate()
+   */
   private void evaluate(){
     for( Individual i : population ){
-      sim.evaluate(i);  //Sets an Individuals fitness and standardizedFitness
+      sim.evaluate(i);
     }
   }
 
+  /**
+   * 'Selects' members of the current population for reproduction and/or
+   * crossover.
+   *
+   * Treats the current population as immutable wrt the individuals
+   * genome (its root expression).  The newPop collection is filled
+   * with copies of members of the original population or the crossovers of copies.
+   *
+   * For reproduction, this means doing the initial random weighted sort
+   * and copying the top members.
+   *
+   * For crossover, randomly weight and sort, and make copies of the top two
+   * individuals.  These two copies can have their expressions messed with, and
+   * then they are added to the new population.
+   *
+   * @see Individual.crossover() Clusterfuck of a crossover method.
+   */
   private void select(){
-    //Fitness proportional selection with sorting and random weights!
     List<Individual> newPop = new ArrayList<>();
-    rWeightPopulation();
-    Collections.sort( population );
-    printPop();
 
     //Individuals that reproduce
+    rWeightPopulation();  //Re-randomly-weighting and sorting gives us a simple
+                          //way to handle fitness proportional selection.  This
+                          //is also used later to pick parents for crossover.
+    Collections.sort( population );
     for( int i = 0; i < numReproduce; i++ ){
-      newPop.add( population.get(i) );
+      newPop.add( population.get(i).copy() );
     }
 
     //Pairs that crossover
     for( int c = 0; c < numCrossover/2; c++ ){
-      rWeightPopulation();
+      rWeightPopulation(); //re-weighting/sort happens for every pair.
       Collections.sort(population);
-      crossover( population.get(0), population.get(1) );
-      newPop.add( population.get(0) );
-      newPop.add( population.get(1) );
+      Individual p1 = population.get(0).copy();
+      Individual p2 = population.get(1).copy();
+      Individual.crossover( p1, p2 );
+      newPop.add( p1 );
+      newPop.add( p2 );
     }
-    population = newPop;  //Set new population
+    population = newPop;
   }
 
-  private void crossover( Individual p1, Individual p2 ){
-    int maxdepth = p1.getDepth();
-    boolean hit = false;
-    Expression prev_a = p1.root;
-    Expression a;
-    boolean a_branch;
-    if( rand.nextFloat() > 0.5f ){
-      a = prev_a.truebranch;
-      a_branch = true;
-    } else {
-      a = prev_a.falsebranch;
-      a_branch = false;
-    }
-    int depth = 2;
-    // System.out.println("COStart A_Prev: "+ prev_a.print());
-    // System.out.println("COStartA: "+ prev_a.terminal());
-    while( !(hit || a.terminal()) ){
-      //See if we get a hit
-      float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
-      if( chance > 0.5f ){
-        //If we do, we use this as our node.
-        hit = true;
-      } else {
-        Expression t = a;
-        if( rand.nextFloat() > 0.5f ){
-          a = prev_a.truebranch;
-          a_branch = true;
-        } else {
-          a = prev_a.falsebranch;
-          a_branch = false;
-        }
-        prev_a = t;
-        depth++;
-      }
-      // System.out.println("COA_Prev: "+ prev_a.print());
-      // System.out.println("COA: "+ a.print());
-    }
-
-    maxdepth = p2.getDepth();
-    hit = false;
-    Expression prev_b = p2.root;
-    Expression b = p2.root;
-    boolean b_branch;
-    if( rand.nextFloat() > 0.5f ){
-      b = b.truebranch;
-      b_branch = true;
-    } else {
-      b = b.falsebranch;
-      b_branch = false;
-    }
-    depth = 2;
-    // System.out.println("COStart B_Prev: "+ prev_a.print());
-    // System.out.println("COStartB: "+ a.print());
-    while( !(hit || b.terminal()) ){
-      //See if we get a hit
-      float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
-      if( chance > 0.5f ){
-        //If we do, we use this as our node.
-        hit = true;
-      } else {
-        prev_b = b;
-        if( rand.nextFloat() > 0.5f ){
-          b = b.truebranch;
-          b_branch = true;
-        } else {
-          b = b.falsebranch;
-          b_branch = false;
-        }
-        depth++;
-      }
-      // System.out.println("COB_Prev: "+ prev_b.print());
-      // System.out.println("COB: "+ b.print());
-    }
-
-    //Swap the two nodes by reassinging the pointers in the expressions
-    if( a_branch ){
-      prev_a.truebranch = b;
-    } else {
-      prev_a.falsebranch = b;
-    }
-    if( b_branch ){
-      prev_b.truebranch = a;
-    } else {
-      prev_b.falsebranch = a;
-    }
-
-  }
-
+  /**
+   * Applys a random weighting to all members of the population.  The
+   * weightedFitness field of each indivdual is set to its fitness*randFloat.
+   */
   private void rWeightPopulation(){
     for( Individual i : population ){
       i.weightedFitness = (int)((float)i.standardizedFitness * rand.nextFloat());
     }
   }
 
-  private void printPop(){
-    //Print old pop
-    System.out.print("pop: ( ");
+  private void cWeightPopulation(){
     for( Individual i : population ){
-      System.out.print( i.fitness+"/"+i.weightedFitness+" " );
+      i.weightedFitness = i.standardizedFitness;
     }
-    System.out.println(")");
+  }
+  /**
+   * Returns a string of a summary of the population.
+   */
+  private String printPop(){
+    //Print old pop
+    String ret = "pop: ( ";
+    for( Individual i : population ){
+      ret += i.fitness+"/"+i.weightedFitness+" ";
+    }
+    ret +=")";
+    return ret;
   }
 }

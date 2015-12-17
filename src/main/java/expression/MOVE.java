@@ -1,10 +1,13 @@
 package expression;
 
 public class MOVE extends Expression {
-  int dir;
-
   public MOVE( int d ){
     dir = d;
+  }
+
+  @Override
+  public Expression copy(){
+    return new MOVE(dir);
   }
 
   @Override

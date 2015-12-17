@@ -10,6 +10,7 @@ import unitgp.ExpressionBuilder;
 
 public class GridSimulation {
   private int MAXGENERATIONS;
+  private int COUNT;  //Times we run per Individual to get its average.
   private int STARTINGHEALTH;
   private int FOODVALUE;
   private int SIZE;
@@ -23,7 +24,8 @@ public class GridSimulation {
   //Graphics!
 
   public GridSimulation(){
-    SIZE = 20;
+    SIZE = 40;
+    COUNT = 20;
     STARTINGHEALTH = 10;
     FOODVALUE = 3;
     MAXGENERATIONS = 400; //Should be around the SIZE*SIZE*FOODDENSITY*FOODVALUE
@@ -33,16 +35,20 @@ public class GridSimulation {
   }
 
   public void evaluate( Individual ind ){
-    placeFood();
-    placeUnit();
+    int total = 0;
+    for( int i = 0; i < COUNT; i++ ){
+      placeFood();
+      placeUnit();
 
-    int g = 0;
-    while( ( g++ < MAXGENERATIONS) && alive() ){
-      moveUnit( ind );  //Uses the s-expression stored in ind to pick a move
+      int g = 0;
+      while( ( g++ < MAXGENERATIONS) && alive() ){
+        moveUnit( ind );  //Uses the s-expression stored in ind to pick a move
+      }
+      total += g-10;
     }
-    //g is the raw fitness of the unit.
-    ind.fitness = g;
-    ind.standardizedFitness = g;  //For now.
+    //total is the raw fitness of the unit.
+    ind.fitness = total;
+    ind.standardizedFitness = total;  //For now.
   }
 
   public void graphicEvaluate( Individual ind ){
@@ -117,19 +123,23 @@ public class GridSimulation {
     switch( i.evaluate(state) ){
       case 0:
       //Up
-      y = (y == 0) ? SIZE-1 : y-1;
+      //y = (y == 0) ? SIZE-1 : y-1;
+      y = (y == 0) ? y : y-1;
       break;
       case 1:
       //Right
-      x = (x == SIZE-1) ? 0 : x+1;
+      //x = (x == SIZE-1) ? 0 : x+1;
+      x = (x == SIZE-1) ? x : x+1;
       break;
       case 2:
       //Down
-      y = (y == SIZE-1) ? 0 : y+1;
+      //y = (y == SIZE-1) ? 0 : y+1;
+      y = (y == SIZE-1) ? y : y+1;
       break;
       case 3:
       //Left
-      x = (x == 0) ? SIZE-1 : x-1;
+      //x = (x == 0) ? SIZE-1 : x-1;
+      x = (x == 0) ? x : x-1;
       break;
       default:
       //Do nothing
