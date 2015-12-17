@@ -41,7 +41,26 @@ public class ExpressionBuilder {
   }
 
   public Expression getGrowExpression( int depth ){
-    return grow_re(depth);
+    //Hack to ensure no expression starts with a terminal
+    Expression t_branch = grow_re( depth-1 );
+    Expression f_branch = grow_re( depth-1 );
+    Expression ret;
+    switch( rand.nextInt(4) ){
+      case 0:
+        ret = new IFUP( t_branch, f_branch );
+        break;
+      case 1:
+        ret = new IFRIGHT(t_branch, f_branch);
+        break;
+      case 2:
+        ret = new IFDOWN(t_branch, f_branch);
+        break;
+      case 3:
+        default:
+        ret = new IFLEFT(t_branch, f_branch);
+        break;
+    }
+    return ret;
   }
 
   private Expression grow_re( int d ){

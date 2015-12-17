@@ -107,71 +107,90 @@ public class UnitGP {
   }
 
   private void crossover( Individual p1, Individual p2 ){
-    //TODO - Might need to make Expressions a class that I can extend/Override
-    //     - Need to be able to traverse the nodes, so they have to exist as
-    //       fields in both types of Expressions, terminal and non terminal.
-    
-    //Select node for cross over A and prev_A
-    // int maxdepth = p1.getDepth();
-    // boolean hit = false;
-    // Expression prev_a = p1.root;
-    // Expression a = p1.root;
-    // if( rand.nextFloat() > 0.5f ){
-    //   a = a.truebranch;
-    // } else {
-    //   a = a.falsebranch;
-    // }
-    // int depth = 2;
-    // while( !hit ){
-    //   //See if we get a hit
-    //   float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
-    //   if( chance > 0.5f || a.terminal() ){
-    //     //If we do, we use this as our node.
-    //     hit = true;
-    //   } else {
-    //     prev_a = a;
-    //     if( rand.nextFloat() > 0.5f ){
-    //       a = a.truebranch;
-    //     } else {
-    //       a = a.falsebranch;
-    //     }
-    //     depth++;
-    //   }
-    // }
-    // //Select node for cross over B and prev_B
-    // maxdepth = p2.getDepth();
-    // hit = false;
-    // Expression prev_b = p1.root;
-    // Expression b = p1.root;
-    // if( rand.nextFloat() > 0.5f ){
-    //   b = b.truebranch;
-    // } else {
-    //   b = b.falsebranch;
-    // }
-    // depth = 2;
-    // while( !hit ){
-    //   //See if we get a hit
-    //   float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
-    //   if( chance > 0.5f || b.terminal()){
-    //     //If we do, we use this as our node.
-    //     hit = true;
-    //   } else {
-    //       prev_b = b;
-    //       if( rand.nextFloat() > 0.5f ){
-    //         b = b.truebranch;
-    //       } else {
-    //         b = b.falsebranch;
-    //       }
-    //       depth++;
-    //   }
-    // }
+    int maxdepth = p1.getDepth();
+    boolean hit = false;
+    Expression prev_a = p1.root;
+    Expression a;
+    boolean a_branch;
+    if( rand.nextFloat() > 0.5f ){
+      a = prev_a.truebranch;
+      a_branch = true;
+    } else {
+      a = prev_a.falsebranch;
+      a_branch = false;
+    }
+    int depth = 2;
+    System.out.println("COStart A_Prev: "+ prev_a.print());
+    System.out.println("COStartA: "+ prev_a.terminal());
+    while( !(hit || prev_a.terminal()) ){
+      //See if we get a hit
+      float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
+      if( chance > 0.5f ){
+        //If we do, we use this as our node.
+        hit = true;
+      } else {
+        Expression t = a;
+        if( rand.nextFloat() > 0.5f ){
+          a = prev_a.truebranch;
+          a_branch = true;
+        } else {
+          a = prev_a.falsebranch;
+          a_branch = false;
+        }
+        prev_a = t;
+        depth++;
+      }
+      System.out.println("COA_Prev: "+ prev_a.print());
+      System.out.println("COA: "+ a.print());
+    }
+
+    maxdepth = p2.getDepth();
+    hit = false;
+    Expression prev_b = p2.root;
+    Expression b = p2.root;
+    boolean b_branch;
+    if( rand.nextFloat() > 0.5f ){
+      b = b.truebranch;
+      b_branch = true;
+    } else {
+      b = b.falsebranch;
+      b_branch = false;
+    }
+    depth = 2;
+    System.out.println("COStart B_Prev: "+ prev_a.print());
+    System.out.println("COStartB: "+ a.print());
+    while( !(hit || b.terminal()) ){
+      //See if we get a hit
+      float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
+      if( chance > 0.5f ){
+        //If we do, we use this as our node.
+        hit = true;
+      } else {
+        prev_b = b;
+        if( rand.nextFloat() > 0.5f ){
+          b = b.truebranch;
+          b_branch = true;
+        } else {
+          b = b.falsebranch;
+          b_branch = false;
+        }
+        depth++;
+      }
+      System.out.println("COB_Prev: "+ prev_b.print());
+      System.out.println("COB: "+ b.print());
+    }
 
     //Swap the two nodes by reassinging the pointers in the expressions
-
-
-
-    //Check to randomly mirror elements.
-
+    if( a_branch ){
+      prev_a.truebranch = b;
+    } else {
+      prev_a.falsebranch = b;
+    }
+    if( b_branch ){
+      prev_b.truebranch = a;
+    } else {
+      prev_b.falsebranch = a;
+    }
 
   }
 

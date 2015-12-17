@@ -1,22 +1,23 @@
 package expression;
 
-public class MOVE implements Expression {
+public class MOVE extends Expression {
   int dir;
-  public Expression truebranch = null;
-  public Expression falsebranch = null;
 
   public MOVE( int d ){
     dir = d;
   }
 
+  @Override
   public String print(){
     return "(MOVE "+dir+")";
   }
 
+  @Override
   public boolean terminal(){
     return true;
   }
 
+  @Override
   public int eval( int[] state ){
     return dir;
   }

@@ -1,11 +1,8 @@
 package expression;
 
-public class IFDOWN implements Expression {
+public class IFDOWN extends Expression {
 
-  public Expression truebranch;
-  public Expression falsebranch;
-
-  //state convention [UP, RIGHT, DOWN, LEFT]
+  @Override
   public int eval( int[] state ){
     if( state[ 2 ] == 1 ){
       return truebranch.eval( state );
@@ -14,10 +11,12 @@ public class IFDOWN implements Expression {
     }
   }
 
+  @Override
   public String print(){
     return "(IFDOWN "+truebranch.print()+" "+falsebranch.print()+")";
   }
 
+  @Override
   public boolean terminal(){
     return false;
   }

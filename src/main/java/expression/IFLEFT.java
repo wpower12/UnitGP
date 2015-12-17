@@ -1,11 +1,8 @@
 package expression;
 
-public class IFLEFT implements Expression {
+public class IFLEFT extends Expression {
 
-    public Expression truebranch;
-    public Expression falsebranch;
-
-    //state convention [UP, RIGHT, DOWN, LEFT]
+    @Override
     public int eval( int[] state ){
       if( state[ 3 ] == 1 ){
         return truebranch.eval(state);
@@ -13,10 +10,11 @@ public class IFLEFT implements Expression {
         return falsebranch.eval(state);
       }
     }
-
+    @Override
     public String print(){
       return "(IFLEFT "+truebranch.print()+" "+falsebranch.print()+")";
     }
+    @Override
     public boolean terminal(){
       return false;
     }

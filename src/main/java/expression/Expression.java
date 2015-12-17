@@ -1,9 +1,18 @@
 package expression;
 
-public interface Expression {
+public class Expression {
+  public Expression truebranch;
+  public Expression falsebranch;
 
   //must evaluate to some integer
-  int eval( int[] state );
-  boolean terminal();
-  String print();
+  public int eval( int[] state ){
+    return 1;
+  }
+
+  public boolean terminal(){
+    return true;
+  };
+  public String print(){
+    return "(EXPRESSION "+truebranch.print()+" "+falsebranch.print()+")";
+  }
 }
