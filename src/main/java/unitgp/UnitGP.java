@@ -13,8 +13,8 @@ public class UnitGP {
   no mutation is being applied during the selection phase, so we can omit the
   parameters related to it.
   */
-  private static int generations = 100;
-  private int populationSize    = 256;  //must be power of 2 for now.
+  private static int generations = 200;
+  private int populationSize    = 128;  //must be power of 2 for now.
   private float perReproduce   = 0.1f;
   private float perCrossover   = 0.9f;
   private float probCOFunction  = 0.9f;
