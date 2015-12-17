@@ -33,15 +33,14 @@ public class UnitGP {
 
   public void run( int generations ){
     for( int i = 0; i < generations; i++ ){
+      System.out.println("Eval");
       evaluate();   //Run the simulation on each individual and obtain fitness
+      System.out.println("Select");
       select();     //Apply the reproduction and crossover operations
     }
   }
 
   public void simulateBest(){
-    //TODO - Use some graphics API to show a graphic representation of
-    //       an individual unit moving about the grid for a set number of
-    //       generations.
     Collections.sort( population );
     System.out.println(population.get(0).print());
     sim.graphicEvaluate(population.get(0));
@@ -120,9 +119,9 @@ public class UnitGP {
       a_branch = false;
     }
     int depth = 2;
-    System.out.println("COStart A_Prev: "+ prev_a.print());
-    System.out.println("COStartA: "+ prev_a.terminal());
-    while( !(hit || prev_a.terminal()) ){
+    // System.out.println("COStart A_Prev: "+ prev_a.print());
+    // System.out.println("COStartA: "+ prev_a.terminal());
+    while( !(hit || a.terminal()) ){
       //See if we get a hit
       float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
       if( chance > 0.5f ){
@@ -140,8 +139,8 @@ public class UnitGP {
         prev_a = t;
         depth++;
       }
-      System.out.println("COA_Prev: "+ prev_a.print());
-      System.out.println("COA: "+ a.print());
+      // System.out.println("COA_Prev: "+ prev_a.print());
+      // System.out.println("COA: "+ a.print());
     }
 
     maxdepth = p2.getDepth();
@@ -157,8 +156,8 @@ public class UnitGP {
       b_branch = false;
     }
     depth = 2;
-    System.out.println("COStart B_Prev: "+ prev_a.print());
-    System.out.println("COStartB: "+ a.print());
+    // System.out.println("COStart B_Prev: "+ prev_a.print());
+    // System.out.println("COStartB: "+ a.print());
     while( !(hit || b.terminal()) ){
       //See if we get a hit
       float chance = ((float)depth/(float)maxdepth)*rand.nextFloat();
@@ -176,8 +175,8 @@ public class UnitGP {
         }
         depth++;
       }
-      System.out.println("COB_Prev: "+ prev_b.print());
-      System.out.println("COB: "+ b.print());
+      // System.out.println("COB_Prev: "+ prev_b.print());
+      // System.out.println("COB: "+ b.print());
     }
 
     //Swap the two nodes by reassinging the pointers in the expressions

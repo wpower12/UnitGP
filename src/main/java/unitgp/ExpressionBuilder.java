@@ -11,7 +11,10 @@ public class ExpressionBuilder {
   }
 
   public Expression getFullExpression( int depth ){
-    return full_re(depth);
+    //Hack to ensure no expression starts with a terminal
+    Expression t_branch = full_re( depth-1 );
+    Expression f_branch = full_re( depth-1 );
+    return new IFDIR( rand.nextInt(4), t_branch, f_branch );
   }
 
   private Expression full_re( int d ){
@@ -19,48 +22,16 @@ public class ExpressionBuilder {
     if( d > 0 ){
       Expression t = full_re(d-1);
       Expression f = full_re(d-1);
-      switch( rand.nextInt(4) ){
-        case 0:
-        ret = new IFUP( t, f );
-        break;
-        case 1:
-        ret = new IFRIGHT(t, f);
-        break;
-        case 2:
-        ret = new IFDOWN(t, f);
-        break;
-        case 3:
-        default:
-        ret = new IFLEFT(t, f);
-        break;
-      }
-      return ret;
+      return new IFDIR( rand.nextInt(4), t, f );
     } else {
       return new MOVE( rand.nextInt(4) );
     }
   }
 
   public Expression getGrowExpression( int depth ){
-    //Hack to ensure no expression starts with a terminal
     Expression t_branch = grow_re( depth-1 );
     Expression f_branch = grow_re( depth-1 );
-    Expression ret;
-    switch( rand.nextInt(4) ){
-      case 0:
-        ret = new IFUP( t_branch, f_branch );
-        break;
-      case 1:
-        ret = new IFRIGHT(t_branch, f_branch);
-        break;
-      case 2:
-        ret = new IFDOWN(t_branch, f_branch);
-        break;
-      case 3:
-        default:
-        ret = new IFLEFT(t_branch, f_branch);
-        break;
-    }
-    return ret;
+    return new IFDIR( rand.nextInt(4), t_branch, f_branch );
   }
 
   private Expression grow_re( int d ){
@@ -69,22 +40,7 @@ public class ExpressionBuilder {
       if( rand.nextFloat() > 0.1f ){
         Expression t = full_re(d-1);
         Expression f = full_re(d-1);
-        switch( rand.nextInt(4) ){
-          case 0:
-            ret = new IFUP( t, f );
-            break;
-          case 1:
-            ret = new IFRIGHT(t, f);
-            break;
-          case 2:
-            ret = new IFDOWN(t, f);
-            break;
-          case 3:
-            default:
-            ret = new IFLEFT(t, f);
-            break;
-        }
-        return ret;
+        return new IFDIR( rand.nextInt(4), t, f );
       } else {
         return new MOVE( rand.nextInt(4) );
       }
@@ -95,10 +51,11 @@ public class ExpressionBuilder {
 
   public static void main( String args[]){
     ExpressionBuilder eb = new ExpressionBuilder();
-
     Expression a = eb.getFullExpression(3);
-
     System.out.println( "Expression: "+a.print() );
+
+    Expression b = eb.getFullExpression(3);
+    System.out.println( "Expression: "+b.print() );
   }
 
 }
