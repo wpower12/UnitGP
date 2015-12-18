@@ -20,7 +20,7 @@ public class UnitGP {
   private float probCOFunction  = 0.9f;
   private float probCOTerminal  = 0.1f;
   private int maxCrossoverDepth = 5;
-  private int maxInitialDepth   = 6;
+  private int maxInitialDepth   = 7;
   //Calculated later.
   private int numCrossover;
   private int numReproduce;

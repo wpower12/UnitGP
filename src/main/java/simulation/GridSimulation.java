@@ -24,9 +24,9 @@ public class GridSimulation {
   //Graphics!
 
   public GridSimulation(){
-    SIZE = 40;
-    COUNT = 20;
-    STARTINGHEALTH = 10;
+    SIZE = 21;
+    COUNT = 5;
+    STARTINGHEALTH = 15;
     FOODVALUE = 3;
     MAXGENERATIONS = 400; //Should be around the SIZE*SIZE*FOODDENSITY*FOODVALUE
     FOODDENSITY = 0.2f;   //How much food to place.
@@ -37,7 +37,11 @@ public class GridSimulation {
   public void evaluate( Individual ind ){
     int total = 0;
     for( int i = 0; i < COUNT; i++ ){
-      placeFood();
+      if( i%2 == 0 ){
+        placeFood_Grid();
+      } else {
+        placeFood_Random();
+      }
       placeUnit();
 
       int g = 0;
@@ -47,13 +51,13 @@ public class GridSimulation {
       total += g-10;
     }
     //total is the raw fitness of the unit.
-    ind.fitness = total;
-    ind.standardizedFitness = total;  //For now.
+    ind.fitness = (int)Math.sqrt((float)total*2)+1;
+    ind.standardizedFitness = ind.fitness;  //For now.
   }
 
   public void graphicEvaluate( Individual ind ){
 
-    placeFood();
+    placeFood_Grid();
     placeUnit();
 
     //Creates the context.
@@ -86,8 +90,19 @@ public class GridSimulation {
     sim.graphicEvaluate( new Individual( eb.getFullExpression(2) ) );
   }
 
+  private void placeFood_Grid(){
+    for( int i = 0; i < SIZE; i++ ){
+      for( int j = 0; j < SIZE; j++){
+        if( (i%2==1) && (j%2==1) ){
+          grid[i][j] = 1;
+        } else {
+          grid[i][j] = 0;
+        }
+      }
+    }
+  }
 
-  private void placeFood(){
+  private void placeFood_Random(){
     //Randomly places food (sets a 1) in the grid
     for( int i = 0; i < SIZE; i++ ){
       for( int j = 0; j < SIZE; j++){

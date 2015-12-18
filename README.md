@@ -22,16 +22,47 @@ ___
   * [Initializing](#gp_init)
   * [Evaluating](#gp_eval)
   * [Selecting](#gp_select)
-+ [Conclusion](#con)
-  * [Expected Behavior](#con_expected)
-  * [Interesting Solutions](#con_solns)
-  * [Next Steps](#con_next)
++ [Results](#res)
+  * [Expected Behavior](#res_expected)
+  * [Interesting Solutions](#res_solns)
 + [References](#ref)
 
 ## Overview <a id="overview"></a>
 
-Educational implementation of the Genetic Programming Paradigm described
-in [Koza 92' Genetic Programming](http://www.amazon.com/exec/obidos/ASIN/0262111705/geneticprogrammi).
+This is a personal project, the purpose of which is to learn about a concept
+known as Genetic Programming.  UnitGP consists of a simulation, a genetic programming
+module, and a set of functions and terminals, representing the simulation.
+
+The UnitGP simulation is that of a simple unit on a grid.  Similar to the ants
+that make up some of the first explanatory implementations of genetic programming.
+All the unit can do is move in the 4 cardinal directions.  All the unit can see
+are the 4 cells adjacent to it.  A unit starts with a certain amount of health,
+and dies when it reaches 0.  By moving to a cell with food in it, the unit gains
+a small amount of health, and the food is removed.
+
+The behavior of the unit, whether it moves up, down, left, or right could be thought
+of as a simple chain of decisions.  If we see something in one direction, we could either
+move that direction, or perhaps go down another path, and check some other direction.
+
+Such simple, binary chains of conditionals can be represented as a tree.  We
+start at the root, evaluate some state, and then choose between two paths.
+
+For example, we could have the following tree:
+
+TODO - SHOW A TREE FORM OF AN Expression
+
+Which the unit would process at each time step, to decide on its action.  
+
+These trees are the core structure that we evolve with the Genetic Programming
+methods.  A random initial population of these trees is created, and through
+generations of random crossover, reproduction, and evaluation an 'optimal' tree,
+or rather, optimal behavior can be found.
+
+This process attempts to mimic the selection found in nature.  Evolution by
+natural selection is a search of an almost infinite problem space, with each
+set of genetic code an attempt at a more fit individual.  By creating approximations
+of these processes, the problem space of possible trees is explored in leaps via
+mutation, and via hill climbing with fitness-proportional selection.
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 
@@ -56,10 +87,6 @@ a grid filled with coins, the fitness may be the number of coins collected.
 Representing a problem or procedure in this way can be difficult, but there is a
 mathematical construct that helps us visualize the ways procedures can be connected,
 manipulated, and built.
-
-The S-Expression!  While this topic is very deep, for our purposes we can consider
-the s-expressions as representations of functions.  The main benefit of them is
-the ability to view functions and procedures as trees.
 
 #### S-Expressions <a id="o_gp_sexp"></a>
 
@@ -95,109 +122,85 @@ the ability to view functions and procedures as trees.
 
 #### Fitness <a id="o_gp_fit"></a>
 
-  Determining fitness...
+  With behavior set, we now need a method by which to evaluate the success of a
+  given tree.  
 
-  Using the simulation...
+  The simulation involves gather food, so some initial attempts at a fitness
+  function could be as simple as the total number of food cells found in a given
+  run, or the total number of generations survived.
+
+  Regardless, it is important to select a measure of fitness that is a positive,
+  monotonic function, and that reacts smoothly to changes in the individual.
+
+  With the current set up of the simulation, meeting these requirements is difficult.
+  Using generation directly as a fitness leads to a stagnation problem.  Individuals
+  with a basic, and simple tree that do just better than the minimum will quickly
+  overwhelm the population.  The number of generations survived jumps very quickly,
+  not smoothly.  Also, due to the random nature of the placement of food, fitness
+  becomes very noisy.
+
+  Fixing this is a big TODO.
 
 #### Genetic Operations <a id="o_gp_ops"></a>
 
-  Reproduction...
+  Having a measure of fitness enables us to evaluate individuals for selection.
+  Selection is the process by which a new population of individuals is built.  
 
-  Crossover...
+  Two main processes are used to do this; reproduction and crossover.
 
-## Encoding Behavior <a id="encode"></a>
+  Reproduction is the selection of some individuals to be directly represented in
+  the next generation.  These individuals are copied, usually directly, but
+  occasionally with some small mutation in their 'genome'.
+
+  This provides some pressure for the best individuals to always contribute to
+  the next generation.  However, always selecting the top individuals may lead to
+  stagnation.  To combat this possible stagnation, a process of fitness proportional
+  selection is used.  The chance for an individual to reproduce, or be copied
+  into the next generation is random, but weighted by its fitness.  
+
+  This variation is a huge asset to the emergence of an optimal solution, and is
+  a core assumption when deriving mathematical representations of the processes
+  of GP.
+
+  The second method of selection is crossover.  In this, two parent individuals
+  are selected (with fitness proportional selection) and used as source material
+  for two new individuals.  A cut node is selected at random in each parent, and
+  swapped between the two, creating two new trees.  These two new individuals are
+  added to the population.
+
+## Implementation <a id="imp"></a>
 
   Now it comes time to actually encode the context of the simulation into some
   atomic expressions.  A best practice is to keep the number of atomic Operations
   small and simple.  
 
-### Choosing Expressions <a id="en_choose"></a>
+### Choosing Expressions <a id="imp_choose"></a>
 
-  If all the unit can do is move in the four cardinal directions, and all it
-  can see is the value of the cells next to it, then we could decide on
-  a set of methods like the following to encode the behavior.
+A total of 9 expressions are encoded by the UnitGP classes.  Their implementation
+described later.  The functions take Expressions as parameters, which may be
+nested expressions, or terminals.  The terminals are expressions that end the
+execution of the procedure, they simply return a result.  This set can be
+considered closed if we assume all expressions return a value representing a
+direction.  All functions evaluate either to a terminal representing a value, or
+to another expression that in turn should evaluate to a terminal.
 
-  ```lisp
-    (IFUP    TEXP FEXP)
-    (IFDOWN  TEXP FEXP)
-    (IFLEFT  TEXP FEXP)
-    (IFRIGHT TEXP FEXP)
-    //TEXP and FEXP are other expressions
+```lisp
+  //Functions
+  (IFUP E_TRUE E_FALSE)
+  (IFRIGHT E_TRUE E_FALSE)
+  (IFDOWN E_TRUE E_FALSE)
+  (IFLEFT E_TRUE E_FALSE)
+  (RAND E_LEFT, E_RIGHT)
+  //Terminals
+  (MOVEUP)
+  (MOVERIGHT)
+  (MOVEDOWN)
+  (MOVELEFT)
+```
 
-    (MOVE DIR)
-    //Dir is the dir [0,1,2,3] = [u, r, d, l] to move
-  ```
+### S-Expressions in Java <a id="imp_sexp"></a>
 
-  Every iteration of the simulation, an expression composed of these
-  atomic operations will run.  Eventually, a `MOVE` command will be
-  executed, and the unit will update.
-
-  I'm not totally sure that this is the strictest way to do this, but its
-  working for now.
-
-  ```lisp
-  Example Expression (Randomly Generated Full Tree of Maxdepth 4):
-
-  (IFUP (IFUP (IFUP (IFDOWN (MOVE 2) (MOVE 2)) (IFUP (MOVE 1) (MOVE 2))) (IFLEFT
-  (IFDOWN (MOVE 1) (MOVE 1)) (IFUP (MOVE 1) (MOVE 2)))) (IFDOWN (IFLEFT (IFRIGHT
-  (MOVE 1) (MOVE 2)) (IFLEFT (MOVE 3) (MOVE 3))) (IFDOWN (IFLEFT (MOVE 3) (MOVE 0))
-  (IFDOWN (MOVE 2) (MOVE 2)))))
-  ```
-
-### S-Expressions in Java <a id="en_java"></a>
-
-  Now we need a way to store the trees of expressions in java, so they
-  can be manipulated by the GP operations.  An interface `Expression` is created that defines an `eval` method.
-
-  ```java
-  int eval( int[] state ){ ... }
-  ```
-  As mentioned before, the unit can see the four adjacent cells.  An
-  array representing these cell's values are passed to the expression
-  on each update.
-
-  Five java classes implement the `Expression` interface. Four for the conditionals, and one for the move expression.  
-
-  The four conditional `Expressions` store references to their true and
-  false branch `Expressions`.  These are then followed based on the logic
-  of the expression.  In general, they look like:
-
-  ```java
-  public class IFDOWN implements Expression {
-    Expression truebranch;
-    Expression falsebranch;
-
-    //...
-
-    //state convention [UP, RIGHT, DOWN, LEFT]
-    public int eval( int[] state ){
-      if( state[ 2 ] == 1 ){
-        return truebranch.eval( state );
-      } else {
-        return falsebranch.eval( state );
-      }
-    }
-
-    //...
-  }  
-  ```
-
-  The `MOVE` class also implements the `Expression` interface, but
-  does not track a reference to any other expressions.  When it is
-  evaluated, all it does is return its direction.  This shows how the move
-  function behaves as a terminal.  It returns a value up the stack of
-  calls instead of evaluating a new expression.
-
-  ```java
-  public class MOVE implements Expression {
-    int dir;
-    //...
-    public int eval( int[] state ){
-      return dir;
-    }
-    //...
-  }
-  ```
+  TODO - write about the Expression classes.
 
   To evaluate an Individuals expression, we simply call eval() on its root, passing
   along the state.  This occurs in the `GridSimulation` class, which contains
@@ -226,15 +229,15 @@ the ability to view functions and procedures as trees.
   and its parameters.  For the terminal function, just a string representing the
   move is returned.
 
-## Genetic Programming! <a id="gp"></a>
+### Genetic Programming! <a id="gp"></a>
 
   Now that we have a structure, and a representation of it in code, we can begin to
   look at the actual operations performed by the Genetic Programming Paradigm.
 
   I'll break this apart into three sections:
-    1) Initializing the population
-    2) Evaluating the population  
-    3) Selecting the population
+    * 1 Initializing the population
+    * 2 Evaluating the population  
+    * 3 Selecting the population
 
 ### Initializing <a id="gp_init"></a>
 
@@ -292,8 +295,42 @@ the ability to view functions and procedures as trees.
 
 ### Evaluating <a id="gp_eval"></a>
 
-  The simulation itself.  Choosing parameters.  Grid behavior on outofbounds.
+  TODO - Implementing the simulation itself.  Choosing parameters.  Grid behavior on outofbounds.
 
 ### Selecting <a id="gp_select"></a>
 
-  Meat of GP.  Fitness proportional selection.  Reproduction, crossover, mutation.-
+  Meat of GP.  Implementing Fitness proportional selection, reproduction, crossover, mutation.-
+
+## Results <a id="res"></a>
+
+### Expected Behavior <a id="res_expected"></a>
+
+I had imagined that there is some optimum solution, atleast one that would behave
+very well.  Take a decision tree like the following:
+
+```lisp
+(IFUP MOVEUP
+  (IFRIGHT MOVERIGHT
+    (IFDOWN MOVEDOWN
+      (IFLEFT MOVELEFT
+        (RAND MOVEUP MOVERIGHT)))))
+```
+Always moving to available food, and then moving either up or right.  This seems
+like it should easily outperform any random walk.  
+
+### Interesting Results <a id="res_solns"></a>
+So far no luck. The GP runs are converging on very simple behavior.  It seems that many
+possible trees do very bad, generally scoring as low as possible in the simulation.
+These are trees that result in very bad meandering, with lots of backtracking.
+
+Quickly, any solution that atleast moves in some consistant direction overwhelm
+the population.  Solutions that simplfy to moving in one direction, or very small
+trees that are biases in one axes are quick to succeed.  This quick jump might
+be dealt with by introducing actual node mutation.  
+
+As for now, the population has stagnated to 'Line Walkers'.  Very few trees that
+include a RAND node survive.
+
+I hope that the addition of mutation yields better results.  It would seem
+possible that a unit could evolve with maximum fitness, one that collects if not
+all food, a large selection of it.
