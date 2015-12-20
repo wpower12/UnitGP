@@ -69,6 +69,7 @@ mutation, and via hill climbing with fitness-proportional selection.
 
   - Max depth in crossover
   - Generation proportional mutation
+  - Rewrite this to not mention s-expressions and just describe trees.
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 
