@@ -51,7 +51,7 @@ public void evaluate( Individual ind ){
 			foodcount += moveUnit( ind );                                                                                                                                                                                                                                 //Uses the s-expression stored in ind to pick a move
 		}
 		//total += g-10;
-		tsotal += foodcount;
+		total += foodcount;
 	}
 	//total is the raw fitness of the unit.
 	ind.fitness = (int)Math.sqrt((float)total*2)+1;
