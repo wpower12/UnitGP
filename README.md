@@ -9,23 +9,24 @@ ___
 
 ## ToC
 
-+ [Overview](#overview)
+* [Overview](#overview)
+  * [ToDo](#o_td)
   * [What Is GP?](#o_gp)
     - [S-Expressions](#o_gp_sexp)
     - [Fitness](#o_gp_fit)
     - [Genetic Operations](#o_gp_ops)
   * [Simulation](#o_sim)
-+ [Encoding Behavior](#encode)
+* [Encoding Behavior](#encode)
   * [Choosing Expressions](#en_chose)
   * [Expressions in Java](#en_java)
-+ [Genetic Programming](#gp)
+* [Genetic Programming](#gp)
   * [Initializing](#gp_init)
   * [Evaluating](#gp_eval)
   * [Selecting](#gp_select)
-+ [Results](#res)
+* [Results](#res)
   * [Expected Behavior](#res_expected)
   * [Interesting Solutions](#res_solns)
-+ [References](#ref)
+* [References](#ref)
 
 ## Overview <a id="overview"></a>
 
@@ -63,6 +64,11 @@ natural selection is a search of an almost infinite problem space, with each
 set of genetic code an attempt at a more fit individual.  By creating approximations
 of these processes, the problem space of possible trees is explored in leaps via
 mutation, and via hill climbing with fitness-proportional selection.
+
+### TODO <a id="o_td"></a>
+
+  - Max depth in crossover
+  - Generation proportional mutation
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 

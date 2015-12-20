@@ -11,6 +11,18 @@ public class MOVE extends Expression {
   }
 
   @Override
+  public Expression mutate( float p ){
+    Expression ret;
+
+    if( rand.nextFloat() < p ){
+      ret = new MOVE( rand.nextInt(4) );
+    } else {
+      ret = new MOVE( dir );
+    }
+    return ret;
+  }
+
+  @Override
   public String print(){
     String dir_s;
     switch( dir ){

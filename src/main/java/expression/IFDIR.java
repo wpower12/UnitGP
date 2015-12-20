@@ -9,6 +9,34 @@ public class IFDIR extends Expression {
   }
 
   @Override
+  public Expression mutate( float p ){
+    Expression ret;
+
+    if( rand.nextFloat() < p ){
+      if( rand.nextFloat() < 0.9f ){
+        switch( rand.nextInt( 2 ) ){
+          case 0:
+            ret = new IFDIR( rand.nextInt(4), null, null);
+            break;
+          case 1:
+          default:
+            ret = new RAND( null, null );
+            break;
+        }
+        ret.truebranch  = truebranch.mutate( p );
+        ret.falsebranch = falsebranch.mutate( p );
+      } else {
+        ret = new MOVE( rand.nextInt(4) );
+      }
+    } else {
+      ret = new IFDIR( dir, null, null );
+      ret.truebranch  = truebranch.mutate( p );
+      ret.falsebranch = falsebranch.mutate( p );
+    }
+    return ret;
+  }
+
+  @Override
   public Expression copy(){
     IFDIR ret = new IFDIR( dir, null, null );
     if( truebranch != null ){
