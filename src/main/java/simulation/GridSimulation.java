@@ -28,8 +28,8 @@ public GridSimulation(){
 	COUNT = 1;
 	STARTINGHEALTH = 15;
 	FOODVALUE = 3;
-	MAXGENERATIONS = 400;                                                                     //Should be around the SIZE*SIZE*FOODDENSITY*FOODVALUE
-	FOODDENSITY = 0.2f;                                                                     //How much food to place.
+	MAXGENERATIONS = 400;
+	FOODDENSITY = 0.2f;
 	rand = new Random();
 	grid = new int[SIZE][SIZE];
 }
@@ -60,7 +60,7 @@ public void evaluate( Individual ind ){
 
 public void graphicEvaluate( Individual ind ){
 
-	placeFood_Grid();
+	placeFood_Random();
 	placeUnit();
 
 	//Creates the context.

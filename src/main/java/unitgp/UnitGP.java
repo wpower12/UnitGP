@@ -9,11 +9,10 @@ import org.apache.logging.log4j.Logger;
 public class UnitGP {
 /**
    According to Koza there are roughly 19 basic parameters of a GP run. We only
-   use those required for the operations we are actually implementing.  For example,
-   no mutation is being applied during the selection phase, so we can omit the
-   parameters related to it.
+   use those required for the operations we are actually implementing. We only
+   implement a subset of them.
  */
-private static int generations = 200;
+private static int generations = 2;
 private int populationSize    = 64;    //must be power of 2 for now.
 private float perReproduce   = 0.1f;
 private float perCrossover   = 0.9f;

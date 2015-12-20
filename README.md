@@ -1,6 +1,6 @@
 # UnitGP
 
-![alt text](http://imgur.com/vEVqXSd.png "Grid and Expressions")
+![alt text](http://i.imgur.com/MXNY51B.png "Grid and Expressions")
 
 Evolving the behavior of a simple food-seeking unit on a grid with
 [genetic programming](https://en.wikipedia.org/wiki/Genetic_programming).
