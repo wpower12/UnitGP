@@ -341,6 +341,6 @@ I hope that the addition of mutation yields better results.  It would seem
 possible that a unit could evolve with maximum fitness, one that collects if not
 all food, a large selection of it.
 
-## References
+## References <a id="ref"></a>
 
 * [Koza-92](https://mitpress.mit.edu/books/genetic-programming) - Koza, John. "Genetic Programming: On the Programming of Computers by Means of Natural Selection". MIT Press, 1992.
