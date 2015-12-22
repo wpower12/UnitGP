@@ -51,7 +51,9 @@ For example, we could have the following tree.  Starting at the root, the unit
 evaluates the condition, and chooses a branch.  Each of these branches can be
 either a new condition to evaluate, or a movement.  
 
+<p align="center">
 <img align="center" src="http://i.imgur.com/kkA3kLZ.png" alt="Basic Tree" >
+</p>
 
 These trees are the core structure that we evolve with the Genetic Programming
 methods.  A random initial population of these trees is created, and through
