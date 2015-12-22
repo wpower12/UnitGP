@@ -156,7 +156,7 @@ enough health to move only an additional 3 steps after eating.
   complexity, variety, or control to a GP run.  One major operation is mutation.
 
   <p align="center">
-  <img align="center" src="http://i.imgur.com/qKkd4pl.png" alt="Crossover Example >
+  <img align="center" src="http://i.imgur.com/qKkd4pl.png" alt="Crossover Example" >
   </p>
 
   **Mutation**
