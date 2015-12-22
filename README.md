@@ -10,8 +10,8 @@ ___
 * [Overview](#overview)
   * [TODO](#o_td)
   * [What Is GP?](#o_gp)
-    - [Fitness](#o_gp_fit)
-    - [Genetic Operations](#o_gp_ops)
+    * [Fitness](#o_gp_fit)
+    * [Genetic Operations](#o_gp_ops)
   * [Simulation](#o_sim)
 * [Encoding Behavior](#encode)
   * [Choosing Expressions](#en_chose)
@@ -30,18 +30,16 @@ ____
 ## Overview <a id="overview"></a>
 
 This is a personal project, the purpose of which is to learn about a concept
-known as Genetic Programming.  UnitGP consists of a simulation, a genetic programming
-module, and a set of functions and terminals, representing the simulation.
+known as Genetic Programming.  UnitGP consists of a simulation and a genetic
+programming module.  
 
-The UnitGP simulation is that of a simple unit on a grid.  Similar to the ants
-that make up some of the first explanatory implementations of genetic programming.
-All the unit can do is move in the 4 cardinal directions.  All the unit can see
-are the 4 cells adjacent to it.  A unit starts with a certain amount of health,
-and dies when it reaches 0.  By moving to a cell with food in it, the unit gains
-a small amount of health, and the food is removed.
+The simulation is an approximation of an insect looking for food.  Placed on a
+grid, this simple bug must find food or slowly starve.  Each tick of the sim,
+the insect can decide to move to a neighboring cell.  To help make this
+decision, the insect is able to see what is in those four cells.
 
-The behavior of the unit, whether it moves up, down, left, or right could be thought
-of as a simple chain of decisions.  If we see something in one direction, we could either
+The decision process of the ant could be thought of as a simple chain of
+ decisions.  If we see something in one direction, we could either
 move that direction, or perhaps go down another path, and check some other direction.
 
 Such simple, binary chains of conditionals can be represented as a tree.  We
@@ -55,16 +53,11 @@ either a new condition to evaluate, or a movement.
 <img align="center" src="http://i.imgur.com/kkA3kLZ.png" alt="Basic Tree" >
 </p>
 
-These trees are the core structure that we evolve with the Genetic Programming
-methods.  A random initial population of these trees is created, and through
-generations of random crossover, reproduction, and evaluation an 'optimal' tree,
-or rather, optimal behavior can be found.
-
-This process attempts to mimic the selection found in nature.  Evolution by
-natural selection is a search of an almost infinite problem space, with each
-set of genetic code an attempt at a more fit individual.  By creating approximations
-of these processes, the problem space of possible trees is explored in leaps via
-mutation, and via hill climbing with fitness-proportional selection.
+This project aims to find an optimal tree, that efficiently finds food in the
+simulation by mimicking the process of evolution through natural selection.
+Genetic programming evolves possible solutions by treating the decision trees
+as genomes, we can select and recombine these trees to generate new, possible
+solutions.    
 
 ### TODO <a id="o_td"></a>
 
@@ -74,46 +67,43 @@ mutation, and via hill climbing with fitness-proportional selection.
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 
-Genetic programming is a distinct method of generating a procedure.  Normally, a procedure
-is hand crafted to solve a problem.  We write software to meet a requirement, we implement
-a specific algorithm to accomplish a set task.  Typically, these things are done in
-a direct manner.  The problem is reasoned about, and the procedure is crafted
-and tested until it does what it needs.
+Genetic programming is a distinct method of generating a procedure.  Normally, a
+procedure is hand crafted to solve a problem.  We write software to meet a
+requirement, we implement a specific algorithm to accomplish a set task.  
+Typically, these things are done in a direct manner.  The problem is reasoned
+about, and the procedure is crafted and tested until it does what it needs.
 
 Instead, Genetic Programming  generates a procedure by imitating the process of
 natural selection.  A population of individuals is created, each one representing
-a random attempt at solving the problem.  Each individual would be some possible
+an attempt at solving the problem.  Each individual would be some possible
 procedure.  
 
-This population is then evaluated.  Each individual, in the context of the problem,
-is given some numerical evaluation.   If the procedure represents a possible mathematical
-function, the fitness might be the error when fed a test set.  Or if the procedure
-represents a path through a grid filled with coins, the fitness may be the number
-of coins collected.  
-
-This fitness is then used as a parameter for the Genetic Programming operations
-that will be used to build a new set of individuals to evaluate.
+These individuals are then evaluated.  Their procedures are used in the context
+of their problem, and assigned some fitness value.  The fitness is then used
+as a core parameter in selecting a new generation of individuals.  Each iteration,
+hopefully, this new population will get closer and closer to containing an optimal
+solution.
 
 #### Fitness <a id="o_gp_fit"></a>
 
-  It is important to select a measure of fitness that is gradual and positive.  
-  Gradual implies that a small change in behavior should lead to a small change
-  in fitness.  Positive implies that a 'good' individal should have a larger
-  fitness than a 'bad' individual.
+It is important to select a measure of fitness that is gradual and positive.  
+Gradual implies that a small change in behavior should lead to a small change
+in fitness.  Positive implies that a 'good' individal should have a larger
+fitness than a 'bad' individual.
 
-  Choosing a measure of fitness that meets these two constraints is difficult.
+Choosing a measure of fitness that meets these two constraints is difficult.
 
-  With the current set up of the simulation, meeting these requirements is difficult.
-  Using generation directly as a fitness leads to a stagnation problem.  Individuals
-  with a basic, and simple tree that do just better than the minimum will quickly
-  overwhelm the population.  The number of generations survived jumps very quickly,
-  not smoothly.  Also, due to the random nature of the placement of food, fitness
-  becomes very noisy.
+With the current set up of the simulation, meeting these requirements is
+difficult. Using generation directly as a fitness leads to a stagnation problem.  
+Individuals with a basic, and simple tree that do just better than the minimum
+will quickly overwhelm the population.  The number of generations survived jumps
+very quickly, not smoothly.  Also, due to the random nature of the placement of
+food, fitness becomes very noisy.
 
-  Fixing this is a big todo.  A current approach is to use the amount of food
-  gathered as the fitness.  In addition, the GridSimulation parameters are set
-  such that food is distributed in a uniform grid, and that the unit gains
-  enough health to move only an additional 3 steps after eating.  
+Fixing this is a big todo.  A current approach is to use the amount of food
+gathered as the fitness.  In addition, the GridSimulation parameters are set
+such that food is distributed in a uniform grid, and that the unit gains
+enough health to move only an additional 3 steps after eating.  
 
 #### Genetic Operations <a id="o_gp_ops"></a>
 
@@ -122,7 +112,7 @@ that will be used to build a new set of individuals to evaluate.
 
   Two main processes are used to do this; reproduction and crossover.
 
-  *Reproduction*
+  **Reproduction**
 
   Reproduction is the selection of some individuals to be directly represented in
   the next generation.  These individuals are copied, usually directly, but
@@ -134,18 +124,27 @@ that will be used to build a new set of individuals to evaluate.
   selection is used.  The chance for an individual to reproduce, or be copied
   into the next generation is random, but weighted by its fitness.  
 
-  Another name for this is 'Roulette Wheel' selection.  We can imagine the individuals
-  in a population all being an area on a roulette wheel, the area being proportional
-  to their fitness.  Selecting an individual is a matter of spinning the wheel.
+  Another name for this is 'Roulette Wheel' selection.  We can imagine the
+  individuals in a population all being an area on a roulette wheel, the area
+  being proportional to their fitness.  Selecting an individual is a matter of spinning the wheel.
 
-  TODO - roulette wheel example
+  <p align="center">
+  <img align="center" src="http://i.imgur.com/th1MJtk.png" alt="Wheel Example" >
+  </p>
 
-  This variation is a huge asset to the emergence of an optimal solution, and is
-  a core assumption when deriving mathematical representations of the processes
-  of GP.
+  It may seem like a small detail, but using proportional selection instead of
+  always choosing from the best individuals is a core element of genetic
+  algorithms.  Without it, populations can stagnate early on, settling on some
+  good, but not optimal solution.  In the early stages of 'evolution', variety
+  is the biggest asset, even if that means occasionally selecting a poor
+  individual over a fit one.
+
+  Koza, and Coley both discuss this.  Chapters K# and C# detail the
+  mathematical importance of fitness proportional selection on the survival
+  of good schemas within a population.  
 
 
-  *Reproduction*
+  **Crossover**
 
   The second method of selection is crossover.  In this, two parent individuals
   are selected (with fitness proportional selection) and used as source material
@@ -156,9 +155,11 @@ that will be used to build a new set of individuals to evaluate.
   There are many other genetic operations, all with specific goals for adding
   complexity, variety, or control to a GP run.  One major operation is mutation.
 
-  TODO - Example
+  <p align="center">
+  <img align="center" src="http://i.imgur.com/qKkd4pl.png" alt="Crossover Example >
+  </p>
 
-  *Mutation*
+  **Mutation**
 
   Mutation acts on a tree by traversing it (visiting every node) and at every node
   checking a random number against a probability of mutation.  This value is
@@ -187,7 +188,7 @@ from simple elements.
 I'll quickly outline the main packages, and what their classes are doing to
 expressions.  I think this provides a nice outline of the program.
 
-*expression Package*
+**expression Package**
 
 Contains the base Expression class, and the various classes representing the
 functions
