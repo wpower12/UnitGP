@@ -52,7 +52,7 @@ evaluates the condition, and chooses a branch.  Each of these branches can be
 either a new condition to evaluate, or a movement.  
 
 ![alt text](http://i.imgur.com/kkA3kLZ.png "Basic Tree")
-
+<img align="center" src="http://i.imgur.com/kkA3kLZ.png" alt="Basic Tree" >
 
 These trees are the core structure that we evolve with the Genetic Programming
 methods.  A random initial population of these trees is created, and through
@@ -189,7 +189,7 @@ expressions.  I think this provides a nice outline of the program.
 *expression Package*
 
 Contains the base Expression class, and the various classes representing the
-functions 
+functions
 
 
 
