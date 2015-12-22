@@ -7,12 +7,9 @@ Evolving the behavior of a simple food-seeking unit on a grid with
 
 ___
 
-## ToC
-
 * [Overview](#overview)
-  * [ToDo](#o_td)
+  * [TODO](#o_td)
   * [What Is GP?](#o_gp)
-    - [S-Expressions](#o_gp_sexp)
     - [Fitness](#o_gp_fit)
     - [Genetic Operations](#o_gp_ops)
   * [Simulation](#o_sim)
@@ -27,6 +24,8 @@ ___
   * [Expected Behavior](#res_expected)
   * [Interesting Solutions](#res_solns)
 * [References](#ref)
+
+____
 
 ## Overview <a id="overview"></a>
 
@@ -48,11 +47,12 @@ move that direction, or perhaps go down another path, and check some other direc
 Such simple, binary chains of conditionals can be represented as a tree.  We
 start at the root, evaluate some state, and then choose between two paths.
 
-For example, we could have the following tree:
+For example, we could have the following tree.  Starting at the root, the unit
+evaluates the condition, and chooses a branch.  Each of these branches can be
+either a new condition to evaluate, or a movement.  
 
-TODO - SHOW A TREE FORM OF AN Expression
+![alt text](http://i.imgur.com/kkA3kLZ.png "Basic Tree")
 
-Which the unit would process at each time step, to decide on its action.  
 
 These trees are the core structure that we evolve with the Genetic Programming
 methods.  A random initial population of these trees is created, and through
@@ -73,71 +73,34 @@ mutation, and via hill climbing with fitness-proportional selection.
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 
-Genetic programming is a method of generating a procedure.  Normally, a procedure
-is created to solve a problem.  We write software to meet a requirement, we implement
+Genetic programming is a distinct method of generating a procedure.  Normally, a procedure
+is hand crafted to solve a problem.  We write software to meet a requirement, we implement
 a specific algorithm to accomplish a set task.  Typically, these things are done in
 a direct manner.  The problem is reasoned about, and the procedure is crafted
 and tested until it does what it needs.
 
-Genetic programming instead generates a procedure by imitating the process of
+Instead, Genetic Programming  generates a procedure by imitating the process of
 natural selection.  A population of individuals is created, each one representing
 a random attempt at solving the problem.  Each individual would be some possible
 procedure.  
 
 This population is then evaluated.  Each individual, in the context of the problem,
-is given some numerical evaluation.
+is given some numerical evaluation.   If the procedure represents a possible mathematical
+function, the fitness might be the error when fed a test set.  Or if the procedure
+represents a path through a grid filled with coins, the fitness may be the number
+of coins collected.  
 
-If the procedure represents a possible mathematical function, the fitness might
-be the error when fed a test set.  Or if the procedure represents a path through
-a grid filled with coins, the fitness may be the number of coins collected.  
-
-Representing a problem or procedure in this way can be difficult, but there is a
-mathematical construct that helps us visualize the ways procedures can be connected,
-manipulated, and built.
-
-#### S-Expressions <a id="o_gp_sexp"></a>
-
-  S-expressions are defined formally as...
-
-  As an example, consider the following s-expressions representing simple
-  arathmatic functions.
-
-  ```lisp
-  (ADD A B)
-  (SUB A B)
-  (MUL A B)
-  ```
-  Each expression can take as a parameter either an expression, or a terminal
-  value.  Suppose we want to only deal with integers. Then the following would
-  be well-defined s-expressions.
-
-  ```lisp
-  (ADD (ADD 2 3) 1)  //evaluates to 6
-  (ADD (MUL 2 (SUB 5 2)) 1) //evaluates to 7
-  ```
-
-  By selecting a set of functions that all return the same type, and a set of
-  terminals that are of that type, we create a set of expressions that are
-  closed.  This is a very important property.  This gives us the assurance that
-  no matter how we nest the expressions, if we eventually fill all possible
-  leafs with terminal nodes, the full expression will evaluate correctly.
-
-  When we are able to encode a problems possible solutions into a set of atomic
-  s-expressions, we open up the possibility of using genetic programming.  The
-  problem of evolving the new procedures now becomes a problem of building trees
-  of s-expressions, and clipping and recombining them into new possible solutions.
+This fitness is then used as a parameter for the Genetic Programming operations
+that will be used to build a new set of individuals to evaluate.
 
 #### Fitness <a id="o_gp_fit"></a>
 
-  With behavior set, we now need a method by which to evaluate the success of a
-  given tree.  
+  It is important to select a measure of fitness that is gradual and positive.  
+  Gradual implies that a small change in behavior should lead to a small change
+  in fitness.  Positive implies that a 'good' individal should have a larger
+  fitness than a 'bad' individual.
 
-  The simulation involves gather food, so some initial attempts at a fitness
-  function could be as simple as the total number of food cells found in a given
-  run, or the total number of generations survived.
-
-  Regardless, it is important to select a measure of fitness that is a positive,
-  monotonic function, and that reacts smoothly to changes in the individual.
+  Choosing a measure of fitness that meets these two constraints is difficult.
 
   With the current set up of the simulation, meeting these requirements is difficult.
   Using generation directly as a fitness leads to a stagnation problem.  Individuals
@@ -146,7 +109,10 @@ manipulated, and built.
   not smoothly.  Also, due to the random nature of the placement of food, fitness
   becomes very noisy.
 
-  Fixing this is a big TODO.
+  Fixing this is a big todo.  A current approach is to use the amount of food
+  gathered as the fitness.  In addition, the GridSimulation parameters are set
+  such that food is distributed in a uniform grid, and that the unit gains
+  enough health to move only an additional 3 steps after eating.  
 
 #### Genetic Operations <a id="o_gp_ops"></a>
 
@@ -154,6 +120,8 @@ manipulated, and built.
   Selection is the process by which a new population of individuals is built.  
 
   Two main processes are used to do this; reproduction and crossover.
+
+  *Reproduction*
 
   Reproduction is the selection of some individuals to be directly represented in
   the next generation.  These individuals are copied, usually directly, but
@@ -165,9 +133,18 @@ manipulated, and built.
   selection is used.  The chance for an individual to reproduce, or be copied
   into the next generation is random, but weighted by its fitness.  
 
+  Another name for this is 'Roulette Wheel' selection.  We can imagine the individuals
+  in a population all being an area on a roulette wheel, the area being proportional
+  to their fitness.  Selecting an individual is a matter of spinning the wheel.
+
+  TODO - roulette wheel example
+
   This variation is a huge asset to the emergence of an optimal solution, and is
   a core assumption when deriving mathematical representations of the processes
   of GP.
+
+
+  *Reproduction*
 
   The second method of selection is crossover.  In this, two parent individuals
   are selected (with fitness proportional selection) and used as source material
@@ -175,11 +152,46 @@ manipulated, and built.
   swapped between the two, creating two new trees.  These two new individuals are
   added to the population.
 
+  There are many other genetic operations, all with specific goals for adding
+  complexity, variety, or control to a GP run.  One major operation is mutation.
+
+  TODO - Example
+
+  *Mutation*
+
+  Mutation acts on a tree by traversing it (visiting every node) and at every node
+  checking a random number against a probability of mutation.  This value is
+  usually set to be very low, on the order of tenths of a percent.  When a node
+  hits this random chance, it 'mutates'.
+
+  The method of mutation can vary, but the simplest form is to just replace that
+  node in the tree with another random possible function or terminal.  
+
+  TODO - Example
+
+  There are a huge variety of more complex mutation operations.  Some switch
+  the child branches, some replace functions with only terminals.  The simplicity
+  of the functions chosen in this project limit the variety of mutation operations
+  available.  
+
+
 ## Implementation <a id="imp"></a>
 
-  Now it comes time to actually encode the context of the simulation into some
-  atomic expressions.  A best practice is to keep the number of atomic Operations
-  small and simple.  
+The Java implementation centers around Expressions.  This base class represents
+a nominal expression in a tree.  For this project, I chose to keep all possible
+functions as binary functions returning integers.  This is a pretty huge simplification
+but one of the amazing properties of GP is its ability to synthesize complexity
+from simple elements.  
+
+I'll quickly outline the main packages, and what their classes are doing to
+expressions.  I think this provides a nice outline of the program.
+
+*expression Package*
+
+Contains the base Expression class, and the various classes representing the
+functions 
+
+
 
 ### Choosing Expressions <a id="imp_choose"></a>
 
