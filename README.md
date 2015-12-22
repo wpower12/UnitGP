@@ -152,12 +152,12 @@ enough health to move only an additional 3 steps after eating.
   swapped between the two, creating two new trees.  These two new individuals are
   added to the population.
 
-  There are many other genetic operations, all with specific goals for adding
-  complexity, variety, or control to a GP run.  One major operation is mutation.
-
   <p align="center">
   <img align="center" src="http://i.imgur.com/qKkd4pl.png" alt="Crossover Example" >
   </p>
+
+  There are many other genetic operations, all with specific goals for adding
+  complexity, variety, or control to a GP run.  One major operation is mutation.
 
   **Mutation**
 
@@ -191,8 +191,18 @@ expressions.  I think this provides a nice outline of the program.
 **expression Package**
 
 Contains the base Expression class, and the various classes representing the
-functions
+functions.  These classes represent the nodes in the trees.  
 
+**simulation Package**
+
+Contains the actual simulation logic.  Responsible for taking an Indivdual,
+and evaluating its root Expression to determine a fitness.
+
+**unitgp Package**
+
+The main UnitGP class contains the logic for the actual GP operation, responsible
+for building an initial population of individuals/expressions.  The ExpressionBuilder
+class is responsbile for returning new expression trees. 
 
 
 ### Choosing Expressions <a id="imp_choose"></a>
