@@ -61,10 +61,10 @@ solutions.
 
 ### TODO <a id="o_td"></a>
 
-  - Fix bug in Expression `Expression.copy()` method.   
   - Max depth in crossover
   - Generation proportional mutation
   - Abstract Function and Terminal sets.
+  - Torodial Grid
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 
@@ -464,21 +464,25 @@ Always moving to available food, and then moving either up or right.  This seems
 like it should easily outperform any random walk.  
 
 ### Interesting Results <a id="res_solns"></a>
-So far no luck. The GP runs are converging on very simple behavior.  It seems that many
-possible trees do very bad, generally scoring as low as possible in the simulation.
-These are trees that result in very bad meandering, with lots of backtracking.
+Initially, there was a bug in my expression.copy() method that prevented the
+correct sub trees from being copied over during selection.  While this had a huge
+negative impact on the resulting individuals, the simulation still managed to
+find some kind of local optimum.  Populations of "line walkers" quickly converged.
+Each one was always some expression that reduced to just moving in a single
+at each timestep.
 
-Quickly, any solution that atleast moves in some consistant direction overwhelm
-the population.  Solutions that simplfy to moving in one direction, or very small
-trees that are biases in one axes are quick to succeed.  This quick jump might
-be dealt with by introducing actual node mutation.  
+Once the copy bug was fixed, a larger variety of individuals evolved.  However,
+their fitness is still not obvious, due to the nature of the `RAND` function.
+I had added this before I understood my bug, hoping it was a solution to a
+stagnation problem, when in reality the stagnation was a result of the incorrect
+copy method.  With that fixed, it may be time to remove `RAND` from the function
+set.
 
-As for now, the population has stagnated to 'Line Walkers'.  Very few trees that
-include a RAND node survive.
-
-I hope that the addition of mutation yields better results.  It would seem
-possible that a unit could evolve with maximum fitness, one that collects if not
-all food, a large selection of it.
+For now, the optimal member of the population has behavior one would expect,
+when near a piece of food, it moves to it, when none are to be found, a
+random direction is selected.  What is interesting is that this behavior can
+be encoded in a variety of trees, all varying in complexity, but simplifying
+to the same paradigm of "Move to food, else wander".
 
 ## References <a id="ref"></a>
 
