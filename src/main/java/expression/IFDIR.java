@@ -38,12 +38,12 @@ public class IFDIR extends Expression {
 
   @Override
   public Expression copy(){
-    IFDIR ret = new IFDIR( dir, null, null );
+    IFDIR ret = new IFDIR( this.dir, null, null );
     if( truebranch != null ){
       ret.truebranch = truebranch.copy();
     }
     if( falsebranch != null ){
-      ret.falsebranch = truebranch.copy();
+      ret.falsebranch = falsebranch.copy();
     }
     return ret;
   }

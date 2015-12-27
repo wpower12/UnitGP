@@ -40,12 +40,12 @@ public class RAND extends Expression {
   @Override
   public Expression copy(){
     RAND ret = new RAND( null, null );
-    if( truebranch != null ){
+    // if( truebranch != null ){
       ret.truebranch = truebranch.copy();
-    }
-    if( falsebranch != null ){
-      ret.falsebranch = truebranch.copy();
-    }
+    // }
+    // if( falsebranch != null ){
+      ret.falsebranch = falsebranch.copy();
+    // }
     return ret;
   }
 

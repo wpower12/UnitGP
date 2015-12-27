@@ -7,7 +7,7 @@ public class MOVE extends Expression {
 
   @Override
   public Expression copy(){
-    return new MOVE(dir);
+    return new MOVE(this.dir);
   }
 
   @Override

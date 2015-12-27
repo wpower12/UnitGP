@@ -12,8 +12,8 @@ public class UnitGP {
    use those required for the operations we are actually implementing. We only
    implement a subset of them.
  */
-private static int generations = 2;
-private int populationSize    = 64;    //must be power of 2 for now.
+private static int generations = 50;
+private int populationSize    = 32;    //must be power of 2 for now.
 private float perReproduce   = 0.1f;
 private float perCrossover   = 0.9f;
 private float probCOFunction  = 0.9f;
@@ -21,6 +21,7 @@ private float probCOTerminal  = 0.1f;
 private float probMutation    = 0.0025f;
 private int maxCrossoverDepth = 10;
 private int maxInitialDepth   = 5;
+
 //Calculated later.
 private int numCrossover;
 private int numReproduce;
@@ -74,7 +75,7 @@ public void run( int g ){
  */
 public void simulateBest(){
 	logger.info("Simulating Current Elite");
-	cWeightPopulation();
+	rWeightPopulation();
 	Collections.sort( population );
 	System.out.println(population.get(0).print());
 	sim.graphicEvaluate(population.get(0));
@@ -161,7 +162,8 @@ private void select(){
 	                                             //way to handle fitness proportional selection.  This
 	                                             //is also used later to pick parents for crossover.
 	Collections.sort( population );
-	for( int i = 0; i < numReproduce; i++ ) {
+	//for( int i = 0; i < numReproduce; i++ ) {
+	for( int i = 0; i < population.size(); i++ ) {
 		Individual ind = population.get(i).copy();
 		ind.applyMutation( probMutation );
 		newPop.add( ind );

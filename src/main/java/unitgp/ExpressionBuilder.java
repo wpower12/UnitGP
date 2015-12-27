@@ -67,8 +67,8 @@ public class ExpressionBuilder {
     Expression ret;
     if( d > 0 ){
       if( rand.nextFloat() > 0.1f ){
-        Expression t = full_re(d-1);
-        Expression f = full_re(d-1);
+        Expression t = grow_re(d-1);
+        Expression f = grow_re(d-1);
         switch( rand.nextInt(2) ){
           case 0:
             ret = new IFDIR( rand.nextInt(4), t, f );
@@ -89,10 +89,10 @@ public class ExpressionBuilder {
 
   public static void main( String args[]){
     ExpressionBuilder eb = new ExpressionBuilder();
-    Expression a = eb.getFullExpression(3);
+    Expression a = eb.getFullExpression(2);
     System.out.println( "Expression: "+a.print() );
 
-    Expression b = eb.getFullExpression(3);
+    Expression b = a.copy();
     System.out.println( "Expression: "+b.print() );
   }
 

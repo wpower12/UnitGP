@@ -1,14 +1,14 @@
 package expression;
 import java.util.Random;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+// import org.apache.logging.log4j.Logger;
 
 public class Expression {
   public Expression truebranch;
   public Expression falsebranch;
   public int dir;
 
-  static final Logger logger = LogManager.getLogger( Expression.class.getName() );
+  //static final Logger logger = LogManager.getLogger( Expression.class.getName() );
 
   protected static Random rand = new Random();
 

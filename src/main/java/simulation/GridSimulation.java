@@ -24,7 +24,7 @@ private boolean alive;
 //Graphics!
 
 public GridSimulation(){
-	SIZE = 20;
+	SIZE = 21;
 	COUNT = 1;
 	STARTINGHEALTH = 15;
 	FOODVALUE = 3;

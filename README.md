@@ -61,9 +61,10 @@ solutions.
 
 ### TODO <a id="o_td"></a>
 
+  - Fix bug in Expression `Expression.copy()` method.   
   - Max depth in crossover
   - Generation proportional mutation
-  - Rewrite this to not mention s-expressions and just describe trees.
+  - Abstract Function and Terminal sets.
 
 ### What Is Genetic Programming? <a id="o_gp"></a>
 
@@ -202,7 +203,7 @@ and evaluating its root Expression to determine a fitness.
 
 The main UnitGP class contains the logic for the actual GP operation, responsible
 for building an initial population of individuals/expressions.  The ExpressionBuilder
-class is responsbile for returning new expression trees. 
+class is responsbile for returning new expression trees.
 
 
 ### Choosing Expressions <a id="imp_choose"></a>
@@ -229,11 +230,60 @@ to another expression that in turn should evaluate to a terminal.
   (MOVELEFT)
 ```
 
-### S-Expressions in Java <a id="imp_sexp"></a>
+### Expressions in Java <a id="imp_sexp"></a>
 
-  TODO - write about the Expression classes.
+  These nine expressions are implemented in three classes, each extending the
+  base expression class.
 
-  To evaluate an Individuals expression, we simply call eval() on its root, passing
+  ```java
+  public class Expression {
+    public Expression truebranch;
+    public Expression falsebranch;
+
+    /* ... */
+    //All the base classes @Overwrite these methods.  
+    public int eval( int[] state ){ ... }
+    public String print(){ ... }
+  }
+
+  public class IFDIR extends Expression {
+    private int direction;
+    /* ... */
+    public IFDIR(d){ direction = d }; //This covers the 4 If-Expressions
+  }
+
+  public class MOVE  extends Expression {
+    private int direction;
+    /* ... */
+    public MOVE(d){ direction = d }; //This covers the 4 Move-Expressions
+  }
+
+  public class RAND extends Expression { ... }  
+
+  ```
+
+  The four if-expressions are implemented with the `IFDIR` class.  A direction
+  field is set that determines what neighbor the method is checking.  This
+  value is set by the `ExpressionBuilder` when a tree is first built, and can be
+  changed by the mutation operation during selection.
+
+  The four move-expressions are implemented in a similar manner with the `MOVE`
+  class.  
+
+  Finally, the `RAND` class exists mirrors the above, but with no direction field.
+
+  All three classes maintain fields that point to child expressions.  The `IFDIR`
+  and `RAND` classes will have non-null pointers.  The `MOVE` class will have null links.
+  This makes sense, given that they are the terminal expressions.
+
+  The `eval( int[] state)` method works as a traversal of the expression tree.
+  Each class implements this eval method.  Upon calling it, the class then
+  evaluates a child branch (RAND, IFDIR) or simply returns a value (MOVE).
+
+  Once a set of classes is instantiated and linked, the `Individual` class just
+  needs to hold a pointer to the root of that linked tree.  
+
+  Then to evaluate, we simply call eval() on its root, passing
   along the state.  This occurs in the `GridSimulation` class, which contains
   the logic specific to the simulation of the unit.  Below we see an overview
   of the state being passed to the unit during evaluation.
@@ -255,20 +305,19 @@ to another expression that in turn should evaluate to a terminal.
   }
   ```
 
-  In addition to eval, the `Expression` interface defines a <pre>print()</pre> method.  This is
+  In addition to `eval()`, the `Expression` interface defines a `print()` method.  This is
   basically the same in all function classes, recursivly printing the expression
-  and its parameters.  For the terminal function, just a string representing the
-  move is returned.
+  and its parameters.
 
 ### Genetic Programming! <a id="gp"></a>
 
   Now that we have a structure, and a representation of it in code, we can begin to
-  look at the actual operations performed by the Genetic Programming Paradigm.
+  look at implementing the actual operations performed in the Genetic Programming paradigm.
 
   I'll break this apart into three sections:
-    * 1 Initializing the population
-    * 2 Evaluating the population  
-    * 3 Selecting the population
+    1. Initializing the population
+    2. Evaluating the population  
+    3. Selecting the population
 
 ### Initializing <a id="gp_init"></a>
 
@@ -324,6 +373,71 @@ to another expression that in turn should evaluate to a terminal.
   start of a GP run can hinder the search of solutions, as a poor local optimum
   will quickly over take the stagnating population.
 
+  **Full Method**
+
+  Both methods build a tree recursively.  A depth parameter is passed along at
+  each method call, reduced by one each time.  For the `Full` method, so long
+  as this depth is above 0, we always select a `Function` node, or rather, we
+  either add a `IFDIR` class, or a `RAND` class.  Once depth hits 0, we add a
+  `Terminal` node, in our case, an instance of the `MOVE` class.  
+
+  Before returning a `Function` node, we must also generate trees representing
+  the children.  This is where the recursive method invocation occurs.  The
+  `full_re( d )` method is called, with a decreased depth passed in.  
+
+  ```java
+  private Expression full_re( int d ){
+    Expression ret;
+    if( d > 0 ){
+      Expression t = full_re(d-1);
+      Expression f = full_re(d-1);
+      switch( rand.nextInt(2) ){
+        case 0:
+          ret = new IFDIR( rand.nextInt(4), t, f );
+          break;
+        case 1:
+        default:
+          ret = new RAND( t, f );
+          break;
+      }
+    } else {
+      ret = new MOVE( rand.nextInt(4) );
+    }
+    return ret;
+  }
+  ```
+
+  **Grow Method**
+
+  The grow method is implemented in a similar manner, however instead of always
+  returning a `Function` node for depths greater than 0, the method may also
+  select a `MOVE` node.
+
+  ```java
+  private Expression grow_re( int d ){
+    Expression ret;
+    if( d > 0 ){
+      if( rand.nextFloat() > 0.1f ){
+        Expression t = full_re(d-1);
+        Expression f = full_re(d-1);
+        switch( rand.nextInt(2) ){
+          case 0:
+            ret = new IFDIR( rand.nextInt(4), t, f );
+            break;
+          case 1:
+          default:
+            ret = new RAND( t, f );
+            break;
+        }
+      } else {
+        ret = new MOVE( rand.nextInt(4) );
+      }
+    } else {
+      ret = new MOVE( rand.nextInt(4) );
+    }
+    return ret;
+  }
+  ```
 ### Evaluating <a id="gp_eval"></a>
 
   TODO - Implementing the simulation itself.  Choosing parameters.  Grid behavior on outofbounds.

@@ -51,12 +51,12 @@ public void paintComponent(Graphics g) {
 			//Food
 			if( grid[i][j] == 1 ) {
 				g.setColor(Color.green);
-				g2.fillRect( i*(SCALE+1)+3, j*(SCALE+1)+3, SCALE-3, SCALE-3 );
+				g2.fillRect( i*(SCALE+1)+5, j*(SCALE+1)+5, SCALE-7, SCALE-7 );
 			}
 			//Unit
 			if( grid[i][j] == 2 ) {
 				g.setColor(Color.red);
-				g2.fillRect( i*(SCALE+1)+1, j*(SCALE+1)+1, SCALE, SCALE );
+				g2.fillRect( i*(SCALE+1)+2, j*(SCALE+1)+2, SCALE-3, SCALE-3 );
 			}
 		}
 	}
