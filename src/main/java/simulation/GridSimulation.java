@@ -25,7 +25,7 @@ private boolean alive;
 
 public GridSimulation(){
 	SIZE = 21;
-	COUNT = 1;
+	COUNT = 5;
 	STARTINGHEALTH = 15;
 	FOODVALUE = 3;
 	MAXGENERATIONS = 400;
@@ -37,12 +37,12 @@ public GridSimulation(){
 public void evaluate( Individual ind ){
 	int total = 0;
 	for( int i = 0; i < COUNT; i++ ) {
-		// if( i%2 == 0 ){
-		//   placeFood_Grid();
-		// } else {
-		//   placeFood_Random();
-		// }
-		placeFood_Grid();
+		if( i%2 == 0 ){
+		  placeFood_Grid();
+		} else {
+		  placeFood_Random();
+		}
+		//placeFood_Grid();
 		placeUnit();
 
 		int g = 0;
@@ -60,7 +60,7 @@ public void evaluate( Individual ind ){
 
 public void graphicEvaluate( Individual ind ){
 
-	placeFood_Random();
+	placeFood_Grid();
 	placeUnit();
 
 	//Creates the context.
@@ -143,23 +143,23 @@ private int moveUnit(Individual i){
 	switch( i.evaluate(state) ) {
 	case 0:
 		//Up
-		//y = (y == 0) ? SIZE-1 : y-1;
-		y = (y == 0) ? y : y-1;
+		y = (y == 0) ? SIZE-1 : y-1;
+		// y = (y == 0) ? y : y-1;
 		break;
 	case 1:
 		//Right
-		//x = (x == SIZE-1) ? 0 : x+1;
-		x = (x == SIZE-1) ? x : x+1;
+		x = (x == SIZE-1) ? 0 : x+1;
+		// x = (x == SIZE-1) ? x : x+1;
 		break;
 	case 2:
 		//Down
-		//y = (y == SIZE-1) ? 0 : y+1;
-		y = (y == SIZE-1) ? y : y+1;
+		y = (y == SIZE-1) ? 0 : y+1;
+		// y = (y == SIZE-1) ? y : y+1;
 		break;
 	case 3:
 		//Left
-		//x = (x == 0) ? SIZE-1 : x-1;
-		x = (x == 0) ? x : x-1;
+		x = (x == 0) ? SIZE-1 : x-1;
+		// x = (x == 0) ? x : x-1;
 		break;
 	default:
 		//Do nothing
