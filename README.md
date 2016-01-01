@@ -22,6 +22,7 @@ ___
   * [Selecting](#gp_select)
 * [Results](#res)
   * [Expected Behavior](#res_expected)
+  * [Interesting Results](#res_ints)
   * [Reducing Solutions](#res_solns)
 * [References](#ref)
 
@@ -517,7 +518,7 @@ very well.  Take a decision tree like the following:
 Always moving to available food, and then moving either up or right.  This seems
 like it should easily outperform any random walk.  
 
-### Interesting Results <a id="res_solns"></a>
+### Interesting Results <a id="res_inds"></a>
 Initially, there was a bug in my expression.copy() method that prevented the
 correct sub trees from being copied over during selection.  While this had a huge
 negative impact on the resulting individuals, the simulation still managed to
@@ -525,18 +526,16 @@ find some kind of local optimum.  Populations of "line walkers" quickly converge
 Each one was always some expression that reduced to just moving in a single
 at each timestep.
 
-Once the copy bug was fixed, a larger variety of individuals evolved.  However,
-their fitness is still not obvious, due to the nature of the `RAND` function.
-I had added this before I understood my bug, hoping it was a solution to a
-stagnation problem, when in reality the stagnation was a result of the incorrect
-copy method.  With that fixed, it may be time to remove `RAND` from the function
-set.
+Once the copy bug was fixed, a larger variety of individuals evolved.  
+
+### Reducing Solutions <a id="res_solns"></a>
 
 For now, the optimal member of the population has behavior one would expect,
 when near a piece of food, it moves to it, when none are to be found, a
 random direction is selected.  What is interesting is that this behavior can
 be encoded in a variety of trees, all varying in complexity, but simplifying
 to the same paradigm of "Move to food, else wander".
+
 
 ## References <a id="ref"></a>
 
