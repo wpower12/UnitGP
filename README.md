@@ -22,16 +22,16 @@ ___
   * [Selecting](#gp_select)
 * [Results](#res)
   * [Expected Behavior](#res_expected)
-  * [Interesting Solutions](#res_solns)
+  * [Reducing Solutions](#res_solns)
 * [References](#ref)
 
 ____
 
 ## Overview <a id="overview"></a>
 
-This is a personal project, the purpose of which is to learn about a concept
-known as Genetic Programming.  UnitGP consists of a simulation and a genetic
-programming module.  
+UnitGP is my (poorly named) educational project. It consists of a simulation
+and a genetic programming module that generates functions for use as the brains
+of an 'insect' being modeled in the simulation.
 
 The simulation is an approximation of an insect looking for food.  Placed on a
 grid, this simple bug must find food or slowly starve.  Each tick of the sim,
@@ -54,9 +54,9 @@ either a new condition to evaluate, or a movement.
 </p>
 
 This project aims to find an optimal tree, that efficiently finds food in the
-simulation by mimicking the process of evolution through natural selection.
+simulation, by mimicking the process of evolution through natural selection.
 Genetic programming evolves possible solutions by treating the decision trees
-as genomes, we can select and recombine these trees to generate new, possible
+as genomes. We can select and recombine these trees to generate new, possible
 solutions.    
 
 ### TODO <a id="o_td"></a>
@@ -94,17 +94,10 @@ fitness than a 'bad' individual.
 
 Choosing a measure of fitness that meets these two constraints is difficult.
 
-With the current set up of the simulation, meeting these requirements is
-difficult. Using generation directly as a fitness leads to a stagnation problem.  
-Individuals with a basic, and simple tree that do just better than the minimum
-will quickly overwhelm the population.  The number of generations survived jumps
-very quickly, not smoothly.  Also, due to the random nature of the placement of
-food, fitness becomes very noisy.
-
-Fixing this is a big todo.  A current approach is to use the amount of food
-gathered as the fitness.  In addition, the GridSimulation parameters are set
-such that food is distributed in a uniform grid, and that the unit gains
-enough health to move only an additional 3 steps after eating.  
+In my simulation, the fitness of an individal is the total number of food found.
+The presence of the random function, and the method by which food is place introduce
+some variability in the fitness, but this is smoothed out by taking an average
+of the food gathered over a set number of runs.  
 
 #### Genetic Operations <a id="o_gp_ops"></a>
 
@@ -440,11 +433,72 @@ to another expression that in turn should evaluate to a terminal.
   ```
 ### Evaluating <a id="gp_eval"></a>
 
-  TODO - Implementing the simulation itself.  Choosing parameters.  Grid behavior on outofbounds.
+  The simulation is contained in the `GridSimulation` class.  This contains
+the logic for simulating an individual, and evaluating its fitness.  
+
+The world of the ant is represnted in code as a integer array.  Values of 0,1,2
+represent empty space, food, and the insect respectivly.  Each tick of the simulation
+represents the unit moving on this grid.  When updating its position, the unit
+can choose one of four directions to move, each one corresponding to the functions
+mentioned before.
+
+During the update tick, the expression being evaluated will need to look at the
+state of the world around the unit.  To do this, a vector of values is built,
+and passed to the expression tree being evaluated.  
+
+The graphic resprsentation of the simulation is done with a JPanel.  The
+`GridPanel` class simply repaints the panel with the new state of the world
+every update loop.  
 
 ### Selecting <a id="gp_select"></a>
 
-  Meat of GP.  Implementing Fitness proportional selection, reproduction, crossover, mutation.-
+**Fitness Proportional Selection**
+
+To implement fitness proportional selection, I somewhat abused the sortability
+of a Comparable class.  The `Indivdual` class extends `Comparable`.  Doing this
+requires providing a `compareTo()` method.  Each indivudals weightedFitness
+is used as the comparison value.
+
+Since we track the collection in an ArrayList object we can easily use the
+Collections sort method on our population.  The compareTo method just needs to
+be written such that a higher weightedFitness precedes a lower one.  
+
+The indivudals track fitness and weightedFitness seperatly.  Doing this allows
+us to apply a random weight to the fitness, and store it for sorting.  The combination
+of the weighting function, and the sort provides an easy implementation of FPS.
+
+**Selection**
+
+Reproduction happens in two steps, the first is selection.  In this, a set
+percentage of the new population is filled by using FPS to choose old individuals
+to copy.  The copying is a deep copy.  All expression classes implement a `copy()`
+method that recursivly return copies of themselves and their branches.  
+
+**Crossover**
+
+Crossover was, by far, the hardest operation to implement.  Cleaning it up is a
+huge next step.
+
+Crossover produces new individuals in pairs.  FPS is used to select a fresh pair
+of parents.  Two traversals happen, one for each parent tree.  During this
+traversal, a random die is rolled before continuing the traversal.  If a small
+threshold is hit, then the node is selected as the 'cut node' for crossover.
+
+This threshold needs to depend on the current depth in the tree.  By having a
+small chance to select the node at lower depths, and a higher chance towards
+the bottom, we somewhat mimic resovour sampling.  This better distributes the
+cuts about the trees.  
+
+When a node doesn't get selected, the traversal continues.  One of the two
+branches is selected at random, pointers to a parent and current expression
+are updated, and the loop goes on.
+
+Once two cut nodes are found, the pointers for the parents and the cut nodes
+are swapped.  Some flags are tracked that remember which branch of the parent
+node should be replaced.  Also, a check for a null parent is done to account
+for the root being selected as the cut node.  
+
+**Mutation**
 
 ## Results <a id="res"></a>
 
