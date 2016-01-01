@@ -1,0 +1,20 @@
+apply plugin: 'application'
+
+mainClassName = "unitgp.UnitGP"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
+  compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
+}
+
+jar {
+    manifest {
+        attributes(
+          "Main-Class": "unitgp.UnitGP"
+                )
+    }
+}
