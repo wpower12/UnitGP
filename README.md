@@ -7,6 +7,7 @@ Evolving the behavior of a simple food-seeking unit on a grid with
 
 ___
 
+* [Running](#running)
 * [Overview](#overview)
   * [TODO](#o_td)
   * [What Is GP?](#o_gp)
@@ -28,7 +29,14 @@ ___
 
 ____
 
-## Overview <a id="overview"></a>
+<a id="running"></a>
+## Running
+
+Requires gradle to run.  Clone this repo and then enter `gradle run`.  A GP run
+will process, and the most fit individual will be simulated in a panel.
+
+<a id="overview"></a>
+## Overview
 
 UnitGP is my (poorly named) educational project. It consists of a simulation
 and a genetic programming module that generates functions for use as the brains
@@ -60,14 +68,16 @@ Genetic programming evolves possible solutions by treating the decision trees
 as genomes. We can select and recombine these trees to generate new, possible
 solutions.    
 
-### TODO <a id="o_td"></a>
+<a id="o_td"></a>
+### TODO
 
   - Max depth in crossover
   - Generation proportional mutation
   - Abstract Function and Terminal sets.
   - Torodial Grid
 
-### What Is Genetic Programming? <a id="o_gp"></a>
+<a id="o_gp"></a>
+### What Is Genetic Programming?
 
 Genetic programming is a distinct method of generating a procedure.  Normally, a
 procedure is hand crafted to solve a problem.  We write software to meet a
